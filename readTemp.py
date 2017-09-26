@@ -47,7 +47,7 @@ def main():
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
         # setup pin 27 as an output
-    GPIO.setup(27,GPIO.OUT)
+    GPIO.setup(17,GPIO.OUT)
 
     localtime = time.asctime( time.localtime(time.time()) )
     print ("Local current time :", localtime)
@@ -65,11 +65,11 @@ def main():
     
     logfile.close()
 
-    if ( temp > 23 ):
-        GPIO.output(27,False)
+    if ( temp > 21 ):
+        GPIO.output(17,False)
         print('Warm. Switch off')
     else :
-        GPIO.output(27,True)
+        GPIO.output(17,True)
         print('Cold. Swithc on')
     #time.sleep(1)
 

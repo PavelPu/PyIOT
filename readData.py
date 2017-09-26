@@ -48,14 +48,17 @@ def main():
     
     print (localtime, "\ttemp:", temp, "\ttemp2:", temp2)
 
-    #logfile = open('templog.txt', 'a')
+    dt = time.strftime("%d %b %Y", time.localtime(time.time()))
+    logname = './logs/' + dt +'_log.txt'
+
+    logfile = open(logname, 'a')
 
     string = localtime + ";" + str(temp) + ";" + str(temp2) + "\n"
-    print(string)
-    #
-    #logfile.write(string)
+    #print(string)
     
-    #logfile.close()
+    logfile.write(string)
+    
+    logfile.close()
 
 if __name__=="__main__":
     main()
