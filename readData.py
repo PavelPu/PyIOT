@@ -49,7 +49,7 @@ def main():
     print (localtime, "\ttemp:", temp, "\ttemp2:", temp2)
 
     dt = time.strftime("%d %b %Y", time.localtime(time.time()))
-    logname = './logs/' + dt +'_log.txt'
+    logname = '/home/pi/PyIOT/logs/' + dt +'_log.txt'
 
     logfile = open(logname, 'a')
 
