@@ -45,10 +45,10 @@ class ReadData:
 
     def logValues(self):
         self._dt = time.strftime("%d %b %Y", time.localtime(time.time()))
-        self._logname = '/home/pi/PyIOT/logs/' + dt +'_log.txt'
-        self._logfile = open(self.logname, 'a')
-        self._logString = self.localtime + ";" + str(self.diningTemp) + ";" + str(self.bathTemp) + "\n"
-        self._logfile.write(string)
+        self._logname = '/home/pi/PyIOT/logs/' + self._dt +'_log.txt'
+        self._logfile = open(self._logname, 'a')
+        self._logString = self.timeStamp+ ";" + str(self.diningTemp) + ";" + str(self.bathTemp) + "\n"
+        self._logfile.write(self._logString)
         self._logfile.close()
 
     def __init__(self):

@@ -3,6 +3,7 @@
 import os
 import glob
 import time
+from readDataClass import ReadData
 
 base_dir = '/sys/bus/w1/devices/'
 
@@ -43,8 +44,12 @@ def main():
     localtime = time.asctime( time.localtime(time.time()) )
     print ("Local current time :", localtime)
 
-    temp = read_temp(device_files[0])
-    temp2 = read_temp(device_files[1])
+
+    sensors = ReadData()
+    temp = sensors.diningTemp
+    temp2 = sensors.bathTemp
+    
+    
     
     print (localtime, "\ttemp:", temp, "\ttemp2:", temp2)
 
