@@ -16,6 +16,7 @@ import RPi.GPIO as GPIO
 import re
 from telemetry import Telemetry
 from readDataClass import ReadData
+import json
 
 # HTTP options
 # Because it can poll "after 9 seconds" polls will happen effectively
@@ -112,6 +113,8 @@ def device_twin_callback(update_state, payload, user_context):
     global TWIN_CALLBACKS
     print ( "\nTwin callback called with:\nupdateStatus = %s\npayload = %s\ncontext = %s" % (update_state, payload, user_context) )
     TWIN_CALLBACKS += 1
+    twin = json.loads(payload)
+    print("Property parsed from device twin " + twin['autoControl'])
     print ( "Total calls confirmed: %d\n" % TWIN_CALLBACKS )
 
 
