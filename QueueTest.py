@@ -1,4 +1,3 @@
-
 from azure.servicebus import ServiceBusService, Message, Queue
 
 print('start')

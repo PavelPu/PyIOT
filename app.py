@@ -15,6 +15,7 @@ import RPi.GPIO as GPIO
 #from Adafruit_BME280 import *
 import re
 from telemetry import Telemetry
+from readDataClass import ReadData
 
 # HTTP options
 # Because it can poll "after 9 seconds" polls will happen effectively
@@ -55,10 +56,10 @@ PROTOCOL = IoTHubTransportProvider.MQTT
 # "HostName=<host_name>;DeviceId=<device_id>;SharedAccessKey=<device_key>"
 telemetry = Telemetry()
 
-if len(sys.argv) < 2:
-    print ( "You need to provide the device connection string as command line arguments." )
-    telemetry.send_telemetry_data(None, EVENT_FAILED, "Device connection string is not provided")
-    sys.exit(0)
+#if len(sys.argv) < 2:
+#    print ( "You need to provide the device connection string as command line arguments." )
+#    telemetry.send_telemetry_data(None, EVENT_FAILED, "Device connection string is not provided")
+#    sys.exit(0)
 
 def is_correct_connection_string():
     m = re.search("HostName=.*;DeviceId=.*;", CONNECTION_STRING)
@@ -67,14 +68,14 @@ def is_correct_connection_string():
     else:
         return False
 
-CONNECTION_STRING = sys.argv[1]
+CONNECTION_STRING = config.CONNECTION_STRING #sys.argv[1]
 
 if not is_correct_connection_string():
     print ( "Device connection string is not correct." )
     telemetry.send_telemetry_data(None, EVENT_FAILED, "Device connection string is not correct.")
     sys.exit(0)
 
-MSG_TXT = "{\"deviceId\": \"Raspberry Pi - Python\",\"temperature\": %f,\"humidity\": %f}"
+MSG_TXT = "{\"deviceId\": \"raspPI\",\"dining temperature\": %f,\"bathroom temperature\": %f}"
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(config.GPIO_PIN_ADDRESS, GPIO.OUT)
@@ -191,10 +192,7 @@ def iothub_client_sample_run():
             reported_state = "{\"newState\":\"standBy\"}"
             client.send_reported_state(reported_state, len(reported_state), send_reported_state_callback, SEND_REPORTED_STATE_CONTEXT)
 
-        #if not config.SIMULATED_DATA:        
-        #    sensor = BME280(address = config.I2C_ADDRESS)
-        #else:
-        sensor = BME280SensorSimulator()
+        sensor = ReadData()
 
         #telemetry.send_telemetry_data(parse_iot_hub_name(), EVENT_SUCCESS, "IoT hub connection is established")
         while True:
@@ -202,11 +200,13 @@ def iothub_client_sample_run():
             if MESSAGE_SWITCH:
                 # send a few messages every minute
                 print ( "IoTHubClient sending %d messages" % MESSAGE_COUNT )
-                temperature = sensor.read_temperature()
-                humidity = sensor.read_humidity()
+                #temperature = sensor.read_temperature()
+                #humidity = sensor.read_humidity()
+                sensor.updVal()
+                sensor.logValues()
                 msg_txt_formatted = MSG_TXT % (
-                    temperature,
-                    humidity)
+                    sensor.diningTemp,
+                    sensor.bathTemp)
                 print (msg_txt_formatted)
                 message = IoTHubMessage(msg_txt_formatted)
                 # optional: assign ids
@@ -214,7 +214,7 @@ def iothub_client_sample_run():
                 message.correlation_id = "correlation_%d" % MESSAGE_COUNT
                 # optional: assign properties
                 prop_map = message.properties()
-                prop_map.add("temperatureAlert", "true" if temperature > TEMPERATURE_ALERT else "false")
+                prop_map.add("temperatureAlert", "true" if sensor.diningTemp > TEMPERATURE_ALERT else "false")
 
                 client.send_event_async(message, send_confirmation_callback, MESSAGE_COUNT)
                 print ( "IoTHubClient.send_event_async accepted message [%d] for transmission to IoT Hub." % MESSAGE_COUNT )

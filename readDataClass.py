@@ -3,6 +3,7 @@
 import os
 import glob
 import time
+import gpiozero as IO
 
 base_dir = '/sys/bus/w1/devices/'
 
@@ -55,6 +56,7 @@ class ReadData:
         self.diningTemp = self.read_temp(device_files[0])
         self.bathTemp = self.read_temp(device_files[1])
         self.timeStamp = time.asctime( time.localtime(time.time()))
+        self.diningRelay = IO.DigitalOutputDevice(17)
 
 def main():
 
@@ -69,17 +71,6 @@ def main():
     print (sensors.timeStamp, "\ttemp:", temp, "\ttemp2:", temp2)
 
     sensors.logValues()
-    # dt = time.strftime("%d %b %Y", time.localtime(time.time()))
-    # logname = '/home/pi/PyIOT/logs/' + dt +'_log.txt'
-
-    # logfile = open(logname, 'a')
-
-    # string = localtime + ";" + str(temp) + ";" + str(temp2) + "\n"
-    # #print(string)
-    
-    # logfile.write(string)
-    
-    # logfile.close()
 
 if __name__=="__main__":
     main()
