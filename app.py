@@ -189,7 +189,7 @@ def iothub_client_sample_run():
 
         if client.protocol == IoTHubTransportProvider.MQTT:
             print ( "IoTHubClient is reporting state" )
-            reported_state = "{\"newState\":\"standBy\"}"
+            reported_state = "{\"newState\":\"standBy\",\"relaysState\":{\"dining\":\"off\"}}"
             client.send_reported_state(reported_state, len(reported_state), send_reported_state_callback, SEND_REPORTED_STATE_CONTEXT)
 
         sensor = ReadData()
