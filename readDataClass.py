@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-import os
-import glob
 import time
 import gpiozero as IO
 
@@ -40,8 +38,8 @@ class ReadData:
             return temp_c
     
     def updVal(self):
-        self.diningTemp = self.read_temp(device_files[0])
-        self.bathTemp = self.read_temp(device_files[1])
+        self.diningTemp = self.read_temp(device_files[1])
+        self.bathTemp = self.read_temp(device_files[0])
         self.timeStamp = time.asctime( time.localtime(time.time()))
 
     def logValues(self):
@@ -53,8 +51,8 @@ class ReadData:
         self._logfile.close()
 
     def __init__(self):
-        self.diningTemp = self.read_temp(device_files[0])
-        self.bathTemp = self.read_temp(device_files[1])
+        self.diningTemp = self.read_temp(device_files[1])
+        self.bathTemp = self.read_temp(device_files[0])
         self.timeStamp = time.asctime( time.localtime(time.time()))
         self.diningRelay = IO.DigitalOutputDevice(17)
 
