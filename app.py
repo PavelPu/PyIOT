@@ -35,7 +35,7 @@ MESSAGE_TIMEOUT = 10000
 
 RECEIVE_CONTEXT = 0
 MESSAGE_COUNT = 0
-MESSAGE_SWITCH = True
+MESSAGE_SWITCH = False
 TWIN_CONTEXT = 0
 SEND_REPORTED_STATE_CONTEXT = 0
 METHOD_CONTEXT = 0
@@ -159,7 +159,7 @@ def send_reported_state_callback(status_code, user_context):
 
 
 def device_method_callback(method_name, payload, user_context):
-    global METHOD_CALLBACKS,MESSAGE_SWITCH
+    global METHOD_CALLBACKS,MESSAGE_SWITCH, MESSAGE_COUNT
     print ( "\nMethod callback called with:\nmethodName = %s\npayload = %s\ncontext = %s" % (method_name, payload, user_context) )
     METHOD_CALLBACKS += 1
     print ( "Total calls confirmed: %d\n" % METHOD_CALLBACKS )
