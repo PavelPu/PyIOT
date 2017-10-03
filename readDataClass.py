@@ -53,7 +53,6 @@ class ReadData:
         self.diningTemp = self.read_temp(device_files[1])
         self.bathTemp = self.read_temp(device_files[0])
         self.timeStamp = time.asctime( time.localtime(time.time()))
-        self.diningRelay = IO.DigitalOutputDevice(17)
 
 def main():
 
