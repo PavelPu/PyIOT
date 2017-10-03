@@ -82,6 +82,38 @@ MSG_TXT = "{\"deviceId\": \"raspPI\",\"dining temperature\": %f,\"bathroom tempe
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(config.GPIO_PIN_ADDRESS, GPIO.OUT)
 
+
+def composeMessage(sensors, relays):
+    sensors.updVal()
+    sensors.logValues()
+
+    #MSG_TXT = "{\"deviceId\": \"raspPI\",\"dining temperature\": %f,\"bathroom temperature\": %f}"
+
+    msg_unformatted = {
+        "deviceID" : "raspPI",
+        "temperature" : {
+            "dining" : sensors.diningTemp,
+            "bath" : sensors.bathTemp
+            },
+        "relaysState" : {
+            "dining" : relays.dining.value}
+        }
+
+    msg_txt_formatted = json.dumps(msg_unformatted)
+
+    print (msg_txt_formatted)
+    message = IoTHubMessage(msg_txt_formatted)
+    # optional: assign ids
+    message.message_id = "message_%d" % MESSAGE_COUNT
+    message.correlation_id = "correlation_%d" % MESSAGE_COUNT
+    # optional: assign properties
+    prop_map = message.properties()
+    prop_map.add("temperatureAlert", "true" if sensors.diningTemp > TEMPERATURE_ALERT else "false")
+    return message
+
+
+
+
 def receive_message_callback(message, counter):
     global RECEIVE_CALLBACKS
     message_buffer = message.get_bytearray()
@@ -146,8 +178,13 @@ def device_method_callback(method_name, payload, user_context):
         return device_method_return_value
     if method_name == "status":
         print ("Reporting status")
-        sensor.updVal()
-
+        message = composeMessage(sensor,relays)
+        client.send_event_async(message, send_confirmation_callback, MESSAGE_COUNT)
+        print ( "IoTHubClient.send_event_async accepted message [%d] for transmission to IoT Hub." % MESSAGE_COUNT )
+        status = client.get_send_status()
+        print ( "Send status: %s" % status )
+        MESSAGE_COUNT += 1
+        device_method_return_value.response = message
     return device_method_return_value
 
 
@@ -199,37 +236,6 @@ def reportState(relays): #report state to device twin
     deviceStateJson = json.loads(deviceState)
     client.send_reported_state(deviceStateJson, len(deviceStateJson), send_reported_state_callback, SEND_REPORTED_STATE_CONTEXT)
 
-def composeMessage(sensors, relays):
-    sensors.updVal()
-    sensors.logValues()
-
-    #MSG_TXT = "{\"deviceId\": \"raspPI\",\"dining temperature\": %f,\"bathroom temperature\": %f}"
-
-    msg_unformatted = {
-        "deviceID" : "raspPI",
-        "temperature" : {
-            "dining" : sensors.diningTemp,
-            "bath" : sensors.bathTemp
-            },
-        "relaysState" : {
-            "dining" : relays.dining.value}
-        }
-
-    #msg_txt_formatted = MSG_TXT % (
-    #    sensor.diningTemp,
-    #    sensor.bathTemp)
-    msg_txt_formatted = json.dumps(msg_unformatted)
-
-    print (msg_txt_formatted)
-    message = IoTHubMessage(msg_txt_formatted)
-    # optional: assign ids
-    message.message_id = "message_%d" % MESSAGE_COUNT
-    message.correlation_id = "correlation_%d" % MESSAGE_COUNT
-    # optional: assign properties
-    prop_map = message.properties()
-    prop_map.add("temperatureAlert", "true" if sensors.diningTemp > TEMPERATURE_ALERT else "false")
-    return message
-
 def iothub_client_sample_run():
     try:
         client = iothub_client_init()
@@ -239,6 +245,7 @@ def iothub_client_sample_run():
             reported_state = "{\"newState\":\"standBy\",\"relaysState\":{\"dining\":\"off\"}}"
             client.send_reported_state(reported_state, len(reported_state), send_reported_state_callback, SEND_REPORTED_STATE_CONTEXT)
 
+        global sensor, relays
         sensor = ReadData()
         relays = Relays()
 
@@ -250,25 +257,6 @@ def iothub_client_sample_run():
                 print ( "IoTHubClient sending %d messages" % MESSAGE_COUNT )
                 
                 message = composeMessage(sensor,relays)
-                
-                #temperature = sensor.read_temperature()
-                #humidity = sensor.read_humidity()
-
-
-                #sensor.updVal()
-                #sensor.logValues()
-                #msg_txt_formatted = MSG_TXT % (
-                #    sensor.diningTemp,
-                #    sensor.bathTemp)
-                #print (msg_txt_formatted)
-                #message = IoTHubMessage(msg_txt_formatted)
-                ## optional: assign ids
-                #message.message_id = "message_%d" % MESSAGE_COUNT
-                #message.correlation_id = "correlation_%d" % MESSAGE_COUNT
-                ## optional: assign properties
-                #prop_map = message.properties()
-                #prop_map.add("temperatureAlert", "true" if sensor.diningTemp > TEMPERATURE_ALERT else "false")
-
                 client.send_event_async(message, send_confirmation_callback, MESSAGE_COUNT)
                 print ( "IoTHubClient.send_event_async accepted message [%d] for transmission to IoT Hub." % MESSAGE_COUNT )
 
