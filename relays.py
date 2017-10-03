@@ -7,4 +7,4 @@ class Relays:
 
     def __init__(self):
         self.dining = IO.DigitalOutputDevice(17)
-        self.diningState = dining.value
+        self.diningState = self.dining.value
