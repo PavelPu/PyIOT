@@ -82,12 +82,9 @@ MSG_TXT = "{\"deviceId\": \"raspPI\",\"dining temperature\": %f,\"bathroom tempe
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(config.GPIO_PIN_ADDRESS, GPIO.OUT)
 
-
-def composeMessage(sensors, relays):
+def readDeviceData (sensors, relays):
     sensors.updVal()
     sensors.logValues()
-
-    #MSG_TXT = "{\"deviceId\": \"raspPI\",\"dining temperature\": %f,\"bathroom temperature\": %f}"
 
     msg_unformatted = {
         "deviceID" : "raspPI",
@@ -100,6 +97,12 @@ def composeMessage(sensors, relays):
         }
 
     msg_txt_formatted = json.dumps(msg_unformatted)
+    return msg_txt_formatted
+
+
+def composeMessage(sensors, relays):
+
+    msg_txt_formatted = readDeviceData(sensors, relays)
 
     print (msg_txt_formatted)
     message = IoTHubMessage(msg_txt_formatted)
@@ -176,15 +179,19 @@ def device_method_callback(method_name, payload, user_context):
         print ( "Stop sending message\n" )
         device_method_return_value.response = "{ \"Response\": \"Successfully stopped\" }"
         return device_method_return_value
-    if method_name == "status":
-        print ("Reporting status")
+    if method_name == "send":
+        print ("Sending message")
         message = composeMessage(sensor,relays)
         client.send_event_async(message, send_confirmation_callback, MESSAGE_COUNT)
         print ( "IoTHubClient.send_event_async accepted message [%d] for transmission to IoT Hub." % MESSAGE_COUNT )
         status = client.get_send_status()
         print ( "Send status: %s" % status )
         MESSAGE_COUNT += 1
-        device_method_return_value.response = message
+        device_method_return_value.response = "Message sent"
+    if method_name == "status":
+        print ("Reporting status")
+        statusText = readDeviceData(sensor,relays)
+        device_method_return_value.response = statusText
     return device_method_return_value
 
 
