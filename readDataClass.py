@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import time
-import gpiozero as IO
 
 base_dir = '/sys/bus/w1/devices/'
 

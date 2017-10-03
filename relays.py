@@ -1,18 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import gpiozero as IO
 
-dining = IO.DigitalOutputDevice(17)
 
-print(dining.value)
+class Relays:
 
-val = dining.value
-
-print(val)
-
-dining.off()
-
-
-print(val)
-
-print(dining.value)
+    def __init__(self):
+        self.dining = IO.DigitalOutputDevice(17)
+        self.diningState = dining.value

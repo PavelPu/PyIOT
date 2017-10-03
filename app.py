@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright (c) Microsoft. All rights reserved.
 # Licensed under the MIT license. See LICENSE file in the project root for
@@ -17,6 +17,7 @@ import re
 from telemetry import Telemetry
 from readDataClass import ReadData
 import json
+from relays import Relays
 
 # HTTP options
 # Because it can poll "after 9 seconds" polls will happen effectively
@@ -114,7 +115,7 @@ def device_twin_callback(update_state, payload, user_context):
     print ( "\nTwin callback called with:\nupdateStatus = %s\npayload = %s\ncontext = %s" % (update_state, payload, user_context) )
     TWIN_CALLBACKS += 1
     twin = json.loads(payload)
-    print("Property parsed from device twin " + twin['autoControl'])
+    print("Property parsed from device twin " + twin["desired"]["autoControl"])
     print ( "Total calls confirmed: %d\n" % TWIN_CALLBACKS )
 
 
@@ -143,6 +144,10 @@ def device_method_callback(method_name, payload, user_context):
         print ( "Stop sending message\n" )
         device_method_return_value.response = "{ \"Response\": \"Successfully stopped\" }"
         return device_method_return_value
+    if method_name == "status":
+        print ("Reporting status")
+        sensor.updVal()
+
     return device_method_return_value
 
 
@@ -185,6 +190,45 @@ def print_last_message_time(client):
         else:
             print ( iothub_client_error )
 
+def reportState(relays): #report state to device twin
+    deivceState = {
+        "relaysState": {
+            "dining" : relays.dining.value
+            }
+        }
+    deviceStateJson = json.loads(deviceState)
+    client.send_reported_state(deviceStateJson, len(deviceStateJson), send_reported_state_callback, SEND_REPORTED_STATE_CONTEXT)
+
+def composeMessage(sensors, relays):
+    sensors.updVal()
+    sensors.logValues()
+
+    #MSG_TXT = "{\"deviceId\": \"raspPI\",\"dining temperature\": %f,\"bathroom temperature\": %f}"
+
+    msg_unformatted = {
+        "deviceID" : "raspPI",
+        "temperature" : {
+            "dining" : sensors.diningTemp,
+            "bath" : sensors.bathTemp
+            },
+        "relaysState" : {
+            "dining" : relays.dining.value}
+        }
+
+    #msg_txt_formatted = MSG_TXT % (
+    #    sensor.diningTemp,
+    #    sensor.bathTemp)
+    msg_txt_formatted = json.dumps(msg_unformatted)
+
+    print (msg_txt_formatted)
+    message = IoTHubMessage(msg_txt_formatted)
+    # optional: assign ids
+    message.message_id = "message_%d" % MESSAGE_COUNT
+    message.correlation_id = "correlation_%d" % MESSAGE_COUNT
+    # optional: assign properties
+    prop_map = message.properties()
+    prop_map.add("temperatureAlert", "true" if sensor.diningTemp > TEMPERATURE_ALERT else "false")
+    return message
 
 def iothub_client_sample_run():
     try:
@@ -196,6 +240,7 @@ def iothub_client_sample_run():
             client.send_reported_state(reported_state, len(reported_state), send_reported_state_callback, SEND_REPORTED_STATE_CONTEXT)
 
         sensor = ReadData()
+        relays = Relays()
 
         #telemetry.send_telemetry_data(parse_iot_hub_name(), EVENT_SUCCESS, "IoT hub connection is established")
         while True:
@@ -203,21 +248,26 @@ def iothub_client_sample_run():
             if MESSAGE_SWITCH:
                 # send a few messages every minute
                 print ( "IoTHubClient sending %d messages" % MESSAGE_COUNT )
+                
+                message = composeMessage(sensor,relays)
+                
                 #temperature = sensor.read_temperature()
                 #humidity = sensor.read_humidity()
-                sensor.updVal()
-                sensor.logValues()
-                msg_txt_formatted = MSG_TXT % (
-                    sensor.diningTemp,
-                    sensor.bathTemp)
-                print (msg_txt_formatted)
-                message = IoTHubMessage(msg_txt_formatted)
-                # optional: assign ids
-                message.message_id = "message_%d" % MESSAGE_COUNT
-                message.correlation_id = "correlation_%d" % MESSAGE_COUNT
-                # optional: assign properties
-                prop_map = message.properties()
-                prop_map.add("temperatureAlert", "true" if sensor.diningTemp > TEMPERATURE_ALERT else "false")
+
+
+                #sensor.updVal()
+                #sensor.logValues()
+                #msg_txt_formatted = MSG_TXT % (
+                #    sensor.diningTemp,
+                #    sensor.bathTemp)
+                #print (msg_txt_formatted)
+                #message = IoTHubMessage(msg_txt_formatted)
+                ## optional: assign ids
+                #message.message_id = "message_%d" % MESSAGE_COUNT
+                #message.correlation_id = "correlation_%d" % MESSAGE_COUNT
+                ## optional: assign properties
+                #prop_map = message.properties()
+                #prop_map.add("temperatureAlert", "true" if sensor.diningTemp > TEMPERATURE_ALERT else "false")
 
                 client.send_event_async(message, send_confirmation_callback, MESSAGE_COUNT)
                 print ( "IoTHubClient.send_event_async accepted message [%d] for transmission to IoT Hub." % MESSAGE_COUNT )
