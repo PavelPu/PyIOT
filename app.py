@@ -238,6 +238,7 @@ def reportState(relays): #report state to device twin
 
 def iothub_client_sample_run():
     try:
+        global client, sensor, relays
         client = iothub_client_init()
 
         if client.protocol == IoTHubTransportProvider.MQTT:
@@ -245,7 +246,6 @@ def iothub_client_sample_run():
             reported_state = "{\"newState\":\"standBy\",\"relaysState\":{\"dining\":\"off\"}}"
             client.send_reported_state(reported_state, len(reported_state), send_reported_state_callback, SEND_REPORTED_STATE_CONTEXT)
 
-        global sensor, relays
         sensor = ReadData()
         relays = Relays()
 
