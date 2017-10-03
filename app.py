@@ -115,7 +115,7 @@ def device_twin_callback(update_state, payload, user_context):
     print ( "\nTwin callback called with:\nupdateStatus = %s\npayload = %s\ncontext = %s" % (update_state, payload, user_context) )
     TWIN_CALLBACKS += 1
     twin = json.loads(payload)
-    print("Property parsed from device twin " + twin["desired"]["autoControl"])
+    #print("Property parsed from device twin " + twin["desired"]["autoControl"])
     print ( "Total calls confirmed: %d\n" % TWIN_CALLBACKS )
 
 
@@ -227,7 +227,7 @@ def composeMessage(sensors, relays):
     message.correlation_id = "correlation_%d" % MESSAGE_COUNT
     # optional: assign properties
     prop_map = message.properties()
-    prop_map.add("temperatureAlert", "true" if sensor.diningTemp > TEMPERATURE_ALERT else "false")
+    prop_map.add("temperatureAlert", "true" if sensors.diningTemp > TEMPERATURE_ALERT else "false")
     return message
 
 def iothub_client_sample_run():
