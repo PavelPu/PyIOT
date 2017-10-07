@@ -187,9 +187,19 @@ def device_method_callback(method_name, payload, user_context):
         status = client.get_send_status()
         print ( "Send status: %s" % status )
         MESSAGE_COUNT += 1
-        device_method_return_value.response = "Message sent"
+        device_method_return_value.response = "{ \"Response\": \"Message sent\" }"
     if method_name == "status":
         print ("Reporting status")
+        statusText = readDeviceData(sensor,relays)
+        device_method_return_value.response = statusText
+    if method_name == "heatOn":
+        print("Switching heating ON")
+        relays.dining.on()
+        statusText = readDeviceData(sensor,relays)
+        device_method_return_value.response = statusText
+    if method_name == "heatOff":
+        print("Switching heating ON")
+        relays.dining.off()
         statusText = readDeviceData(sensor,relays)
         device_method_return_value.response = statusText
     return device_method_return_value
