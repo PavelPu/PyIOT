@@ -95,7 +95,7 @@ def readDeviceData (sensors, relays):
         "relaysState" : {
             "dining" : relays.dining.value,
             "bath" : relays.bath.value,
-            "waterHeater" : relays.bath.value}
+            "waterHeater" : relays.waterHeater.value}
         }
 
     msg_txt_formatted = json.dumps(msg_unformatted)
@@ -201,7 +201,7 @@ def device_method_callback(method_name, payload, user_context):
         statusText = readDeviceData(sensor,relays)
         device_method_return_value.response = statusText
     if method_name == "heatOff":
-        print("Switching heating ON")
+        print("Switching heating OFF")
         relays.dining.off()
         relays.bath.off()
         statusText = readDeviceData(sensor,relays)
@@ -212,7 +212,7 @@ def device_method_callback(method_name, payload, user_context):
         statusText = readDeviceData(sensor,relays)
         device_method_return_value.response = statusText
     if method_name == "waterOff":
-        print("Switching water heating ON")
+        print("Switching water heating OFF")
         relays.waterHeater.off()
         statusText = readDeviceData(sensor,relays)
         device_method_return_value.response = statusText
@@ -261,7 +261,8 @@ def print_last_message_time(client):
 def reportState(relays): #report state to device twin
     deivceState = {
         "relaysState": {
-            "dining" : relays.dining.value
+            "dining" : relays.dining.value,
+            "bath" : relays.bath.value
             }
         }
     deviceStateJson = json.loads(deviceState)
