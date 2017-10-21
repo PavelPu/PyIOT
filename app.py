@@ -272,10 +272,10 @@ def reportState(relays): #report state to device twin
 def autoControl():
     global sensor, relays
 
-    if sensor.bathTemp <= 4 && relays.bath.value == False:
+    if sensor.bathTemp <= 4 & relays.bath.value == False:
         relays.bath.on()
         print( "Turning heating in bathroom ON")
-    if sensor.bathTemp >= 7 && relays.bath.value == True:
+    if sensor.bathTemp >= 7 & relays.bath.value == True:
         relays.bath.off()
         print( "Turning heating in bathroom OFF")
 
