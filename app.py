@@ -279,6 +279,13 @@ def autoControl():
         relays.bath.off()
         print( "Turning heating in bathroom OFF")
 
+    if sensor.diningTemp <= 1 & relays.dining.value == False:
+        relays.dining.on()
+        print( "Turning heating in dining room ON")
+    if sensor.diningTemp >= 3 & relays.dining.value == True:
+        relays.dining.off()
+        print( "Turning heating in dining room OFF")
+
 def iothub_client_sample_run():
     try:
         global client, sensor, relays
