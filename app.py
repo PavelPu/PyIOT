@@ -36,6 +36,7 @@ MESSAGE_TIMEOUT = 10000
 RECEIVE_CONTEXT = 0
 MESSAGE_COUNT = 0
 MESSAGE_SWITCH = False
+AUTO_CONTROL = True
 TWIN_CONTEXT = 0
 SEND_REPORTED_STATE_CONTEXT = 0
 METHOD_CONTEXT = 0
@@ -268,6 +269,16 @@ def reportState(relays): #report state to device twin
     deviceStateJson = json.loads(deviceState)
     client.send_reported_state(deviceStateJson, len(deviceStateJson), send_reported_state_callback, SEND_REPORTED_STATE_CONTEXT)
 
+def autoControl():
+    global sensor, relays
+
+    if sensor.bathTemp <= 4 && relays.bath.value == False:
+        relays.bath.on()
+        print( "Turning heating in bathroom ON")
+    if sensor.bathTemp >= 7 && relays.bath.value == True:
+        relays.bath.off()
+        print( "Turning heating in bathroom OFF")
+
 def iothub_client_sample_run():
     try:
         global client, sensor, relays
@@ -295,6 +306,8 @@ def iothub_client_sample_run():
                 status = client.get_send_status()
                 print ( "Send status: %s" % status )
                 MESSAGE_COUNT += 1
+            if AUTO_CONTROL:
+                autoControl()
             time.sleep(config.MESSAGE_TIMESPAN / 1000.0)
 
     except IoTHubError as iothub_error:
