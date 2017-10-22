@@ -89,6 +89,7 @@ def readDeviceData (sensors, relays):
 
     msg_unformatted = {
         "deviceID" : "raspPI",
+        "timestamp" : sensors.timeStamp,
         "temperature" : {
             "dining" : sensors.diningTemp,
             "bath" : sensors.bathTemp
@@ -272,14 +273,14 @@ def reportState(relays): #report state to device twin
 def autoControl():
     global sensor, relays
 
-    if sensor.bathTemp <= 4 & relays.bath.value == False:
+    if sensor.bathTemp <= 4:
         relays.bath.on()
         print( "Turning heating in bathroom ON")
-    if sensor.bathTemp >= 7 & relays.bath.value == True:
+    if sensor.bathTemp >= 7:
         relays.bath.off()
         print( "Turning heating in bathroom OFF")
 
-    if sensor.diningTemp <= 1 & relays.dining.value == False:
+    if sensor.diningTemp <= 1:
         relays.dining.on()
         print( "Turning heating in dining room ON")
     if sensor.diningTemp >= 3:

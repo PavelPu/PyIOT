@@ -7,6 +7,6 @@ then
 else
   script='/home/pi/PyIOT/app.py'
   echo 'starting $script'
-  /usr/bin/python3 $script &
+  nohup $script &
   echo $! > temp
 fi
