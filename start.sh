@@ -6,7 +6,7 @@ then
   echo "Process already exists; $pid"
 else
   script='/home/pi/PyIOT/app.py'
-  echo 'starting $script with nohup'
-  nohup /usr/bin/python3 $script &
+  echo 'starting $script'
+  /usr/bin/python3 $script &
   echo $! > temp
 fi
