@@ -282,7 +282,7 @@ def autoControl():
     if sensor.diningTemp <= 1 & relays.dining.value == False:
         relays.dining.on()
         print( "Turning heating in dining room ON")
-    if sensor.diningTemp >= 3 & relays.dining.value == True:
+    if sensor.diningTemp >= 3:
         relays.dining.off()
         print( "Turning heating in dining room OFF")
 
