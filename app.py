@@ -14,7 +14,7 @@ from BME280SensorSimulator import BME280SensorSimulator
 import RPi.GPIO as GPIO
 #from Adafruit_BME280 import *
 import re
-from telemetry import Telemetry
+#from telemetry import Telemetry
 from readDataClass import ReadData
 import json
 from relays import Relays
@@ -57,7 +57,7 @@ PROTOCOL = IoTHubTransportProvider.MQTT
 
 # String containing Hostname, Device Id & Device Key in the format:
 # "HostName=<host_name>;DeviceId=<device_id>;SharedAccessKey=<device_key>"
-telemetry = Telemetry()
+#telemetry = Telemetry()
 
 #if len(sys.argv) < 2:
 #    print ( "You need to provide the device connection string as command line arguments." )
@@ -75,7 +75,7 @@ CONNECTION_STRING = config.CONNECTION_STRING #sys.argv[1]
 
 if not is_correct_connection_string():
     print ( "Device connection string is not correct." )
-    telemetry.send_telemetry_data(None, EVENT_FAILED, "Device connection string is not correct.")
+    #telemetry.send_telemetry_data(None, EVENT_FAILED, "Device connection string is not correct.")
     sys.exit(0)
 
 MSG_TXT = "{\"deviceId\": \"raspPI\",\"dining temperature\": %f,\"bathroom temperature\": %f}"
@@ -320,7 +320,7 @@ def iothub_client_sample_run():
 
     except IoTHubError as iothub_error:
         print ( "Unexpected error %s from IoTHub" % iothub_error )
-        telemetry.send_telemetry_data(parse_iot_hub_name(), EVENT_FAILED, "Unexpected error %s from IoTHub" % iothub_error)
+        #telemetry.send_telemetry_data(parse_iot_hub_name(), EVENT_FAILED, "Unexpected error %s from IoTHub" % iothub_error)
         return
     except KeyboardInterrupt:
         print ( "IoTHubClient sample stopped" )
