@@ -4,5 +4,4 @@ echo 'GIT pull'
 git pull
 
 echo 'restart'
-./stop.sh
-./start.sh
+sudo systemctl restart pyiot.service
