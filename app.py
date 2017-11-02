@@ -171,7 +171,7 @@ def send_reported_state_callback(status_code, user_context):
 
 
 def device_method_callback(method_name, payload, user_context):
-    global METHOD_CALLBACKS,MESSAGE_SWITCH, MESSAGE_COUNT
+    global METHOD_CALLBACKS,MESSAGE_SWITCH, MESSAGE_COUNT, sensor, relays, logger
     print ( "\nMethod callback called with:\nmethodName = %s\npayload = %s\ncontext = %s" % (method_name, payload, user_context) )
     METHOD_CALLBACKS += 1
     print ( "Total calls confirmed: %d\n" % METHOD_CALLBACKS )
@@ -198,29 +198,29 @@ def device_method_callback(method_name, payload, user_context):
         MESSAGE_COUNT += 1
         device_method_return_value.response = "{ \"Response\": \"Message sent\" }"
     if method_name == "status":
-        statusText = readDeviceData(sensors, relays, logger)
+        statusText = readDeviceData(sensor, relays, logger)
         device_method_return_value.response = statusText
     if method_name == "heatOn":
         print("Switching heating ON")
         relays.dining.on()
         relays.bath.on()
-        statusText = readDeviceData(sensors, relays, logger)
+        statusText = readDeviceData(sensor, relays, logger)
         device_method_return_value.response = statusText
     if method_name == "heatOff":
         print("Switching heating OFF")
         relays.dining.off()
         relays.bath.off()
-        statusText = readDeviceData(sensors, relays, logger)
+        statusText = readDeviceData(sensor, relays, logger)
         device_method_return_value.response = statusText
     if method_name == "waterOn":
         print("Switching water heating ON")
         relays.waterHeater.on()
-        statusText = readDeviceData(sensors, relays, logger)
+        statusText = readDeviceData(sensor, relays, logger)
         device_method_return_value.response = statusText
     if method_name == "waterOff":
         print("Switching water heating OFF")
         relays.waterHeater.off()
-        statusText = readDeviceData(sensors, relays, logger)
+        statusText = readDeviceData(sensor, relays, logger)
         device_method_return_value.response = statusText
     return device_method_return_value
 
