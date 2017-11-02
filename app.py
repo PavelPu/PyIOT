@@ -199,29 +199,29 @@ def device_method_callback(method_name, payload, user_context):
         MESSAGE_COUNT += 1
         device_method_return_value.response = "{ \"Response\": \"Message sent\" }"
     if method_name == "status":
-        statusText = readDeviceData(sensor,relays)
+        statusText = readDeviceData()
         device_method_return_value.response = statusText
     if method_name == "heatOn":
         print("Switching heating ON")
         relays.dining.on()
         relays.bath.on()
-        statusText = readDeviceData(sensor,relays)
+        statusText = readDeviceData()
         device_method_return_value.response = statusText
     if method_name == "heatOff":
         print("Switching heating OFF")
         relays.dining.off()
         relays.bath.off()
-        statusText = readDeviceData(sensor,relays)
+        statusText = readDeviceData()
         device_method_return_value.response = statusText
     if method_name == "waterOn":
         print("Switching water heating ON")
         relays.waterHeater.on()
-        statusText = readDeviceData(sensor,relays)
+        statusText = readDeviceData()
         device_method_return_value.response = statusText
     if method_name == "waterOff":
         print("Switching water heating OFF")
         relays.waterHeater.off()
-        statusText = readDeviceData(sensor,relays)
+        statusText = readDeviceData()
         device_method_return_value.response = statusText
     return device_method_return_value
 
