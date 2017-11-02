@@ -294,7 +294,7 @@ def autoControl():
 
 def iothub_client_sample_run():
     try:
-        global client, sensor, relays
+        global client, sensor, relays, logger
         client = iothub_client_init()
 
         if client.protocol == IoTHubTransportProvider.MQTT:
