@@ -18,6 +18,7 @@ import re
 from readDataClass import ReadData
 import json
 from relays import Relays
+from logging import Logging
 
 # HTTP options
 # Because it can poll "after 9 seconds" polls will happen effectively
@@ -80,12 +81,13 @@ if not is_correct_connection_string():
 
 MSG_TXT = "{\"deviceId\": \"raspPI\",\"dining temperature\": %f,\"bathroom temperature\": %f}"
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(config.GPIO_PIN_ADDRESS, GPIO.OUT)
+#GPIO.setmode(GPIO.BCM)
+#GPIO.setup(config.GPIO_PIN_ADDRESS, GPIO.OUT)
 
-def readDeviceData (sensors, relays):
+def readDeviceData ():
+    global sensors, relays, logger
     sensors.updVal()
-    sensors.logValues()
+    #sensors.logValues()
 
     msg_unformatted = {
         "deviceID" : "raspPI",
@@ -97,10 +99,13 @@ def readDeviceData (sensors, relays):
         "relaysState" : {
             "dining" : relays.dining.value,
             "bath" : relays.bath.value,
-            "waterHeater" : relays.waterHeater.value}
+            "waterHeater" : relays.waterHeater.value},
+        "AutoControl" : AUTO_CONTROL
         }
 
     msg_txt_formatted = json.dumps(msg_unformatted)
+    logger.logStateString('msg_txt_formatted')
+
     return msg_txt_formatted
 
 
@@ -146,7 +151,7 @@ def send_confirmation_callback(message, result, user_context):
     print ( "    Properties: %s" % key_value_pair )
     SEND_CALLBACKS += 1
     print ( "    Total calls confirmed: %d" % SEND_CALLBACKS )
-    led_blink()
+    #led_blink()
 
 
 def device_twin_callback(update_state, payload, user_context):
@@ -154,6 +159,7 @@ def device_twin_callback(update_state, payload, user_context):
     print ( "\nTwin callback called with:\nupdateStatus = %s\npayload = %s\ncontext = %s" % (update_state, payload, user_context) )
     TWIN_CALLBACKS += 1
     twin = json.loads(payload)
+    AUTO_CONTROL = twin["desired"]["autoControl"]["enabled"]
     #print("Property parsed from device twin " + twin["desired"]["autoControl"])
     print ( "Total calls confirmed: %d\n" % TWIN_CALLBACKS )
 
@@ -193,7 +199,6 @@ def device_method_callback(method_name, payload, user_context):
         MESSAGE_COUNT += 1
         device_method_return_value.response = "{ \"Response\": \"Message sent\" }"
     if method_name == "status":
-        print ("Reporting status")
         statusText = readDeviceData(sensor,relays)
         device_method_return_value.response = statusText
     if method_name == "heatOn":
@@ -260,7 +265,8 @@ def print_last_message_time(client):
         else:
             print ( iothub_client_error )
 
-def reportState(relays): #report state to device twin
+def reportState(): #report state to device twin
+    global relays
     deivceState = {
         "relaysState": {
             "dining" : relays.dining.value,
@@ -297,6 +303,7 @@ def iothub_client_sample_run():
             reported_state = "{\"newState\":\"standBy\",\"relaysState\":{\"dining\":\"off\"}}"
             client.send_reported_state(reported_state, len(reported_state), send_reported_state_callback, SEND_REPORTED_STATE_CONTEXT)
 
+        logger = Logging()
         sensor = ReadData()
         relays = Relays()
 
@@ -327,10 +334,10 @@ def iothub_client_sample_run():
 
     print_last_message_time(client)
 
-def led_blink():
-    GPIO.output(config.GPIO_PIN_ADDRESS, GPIO.HIGH)
-    time.sleep(config.BLINK_TIMESPAN / 1000.0)
-    GPIO.output(config.GPIO_PIN_ADDRESS, GPIO.LOW)
+#def led_blink():
+#    GPIO.output(config.GPIO_PIN_ADDRESS, GPIO.HIGH)
+#    time.sleep(config.BLINK_TIMESPAN / 1000.0)
+#    GPIO.output(config.GPIO_PIN_ADDRESS, GPIO.LOW)
 
 def usage():
     print ( "Usage: iothub_client_sample.py -p <protocol> -c <connectionstring>" )
