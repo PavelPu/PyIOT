@@ -84,8 +84,7 @@ MSG_TXT = "{\"deviceId\": \"raspPI\",\"dining temperature\": %f,\"bathroom tempe
 #GPIO.setmode(GPIO.BCM)
 #GPIO.setup(config.GPIO_PIN_ADDRESS, GPIO.OUT)
 
-def readDeviceData ():
-    global sensors, relays, logger
+def readDeviceData (sensors, relays, logger): 
     sensors.updVal()
     #sensors.logValues()
 
@@ -111,7 +110,7 @@ def readDeviceData ():
 
 def composeMessage(sensors, relays):
 
-    msg_txt_formatted = readDeviceData(sensors, relays)
+    msg_txt_formatted = readDeviceData(sensors, relays, logger)
 
     print (msg_txt_formatted)
     message = IoTHubMessage(msg_txt_formatted)
@@ -199,29 +198,29 @@ def device_method_callback(method_name, payload, user_context):
         MESSAGE_COUNT += 1
         device_method_return_value.response = "{ \"Response\": \"Message sent\" }"
     if method_name == "status":
-        statusText = readDeviceData()
+        statusText = readDeviceData(sensors, relays, logger)
         device_method_return_value.response = statusText
     if method_name == "heatOn":
         print("Switching heating ON")
         relays.dining.on()
         relays.bath.on()
-        statusText = readDeviceData()
+        statusText = readDeviceData(sensors, relays, logger)
         device_method_return_value.response = statusText
     if method_name == "heatOff":
         print("Switching heating OFF")
         relays.dining.off()
         relays.bath.off()
-        statusText = readDeviceData()
+        statusText = readDeviceData(sensors, relays, logger)
         device_method_return_value.response = statusText
     if method_name == "waterOn":
         print("Switching water heating ON")
         relays.waterHeater.on()
-        statusText = readDeviceData()
+        statusText = readDeviceData(sensors, relays, logger)
         device_method_return_value.response = statusText
     if method_name == "waterOff":
         print("Switching water heating OFF")
         relays.waterHeater.off()
-        statusText = readDeviceData()
+        statusText = readDeviceData(sensors, relays, logger)
         device_method_return_value.response = statusText
     return device_method_return_value
 
