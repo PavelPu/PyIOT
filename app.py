@@ -322,6 +322,8 @@ def iothub_client_sample_run():
                 MESSAGE_COUNT += 1
             if AUTO_CONTROL:
                 autoControl()
+            
+            statusText = readDeviceData(sensor, relays, logger)
             time.sleep(config.MESSAGE_TIMESPAN / 1000.0)
 
     except IoTHubError as iothub_error:
