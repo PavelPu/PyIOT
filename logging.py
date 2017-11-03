@@ -15,7 +15,7 @@ class Logging:
         self._launchDate = time.strftime("%d %b %Y", time.localtime(time.time()))
         self._appLogFileName = '/home/pi/PyIOT/logs/applog/' + self._launchDate +'_applog.txt'
         self._logfile = open(self._appLogFileName, 'a')
-        self._logfile.write(time.asctime( time.localtime(time.time())) + '\t' + 'App started')
+        self._logfile.write(time.asctime( time.localtime(time.time())) + '\t' + 'App started\n')
         self._logfile.close()
 
 
