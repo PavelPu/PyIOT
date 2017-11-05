@@ -158,10 +158,14 @@ def device_twin_callback(update_state, payload, user_context):
     print ( "\nTwin callback called with:\nupdateStatus = %s\npayload = %s\ncontext = %s" % (update_state, payload, user_context) )
     TWIN_CALLBACKS += 1
     twin = json.loads(payload)
-    if update_state == "PARTIAL":
-        AUTO_CONTROL = twin["autoControl"]["enabled"]
-    else:
+    if 'desired' in twin:
         AUTO_CONTROL = twin["desired"]["autoControl"]["enabled"]
+    if 'autoControl' in twin:
+        AUTO_CONTROL = twin["autoControl"]["enabled"]
+    #if update_state == "PARTIAL":
+    #    AUTO_CONTROL = twin["autoControl"]["enabled"]
+    #else:
+    #    AUTO_CONTROL = twin["desired"]["autoControl"]["enabled"]
     #print("Property parsed from device twin " + twin["desired"]["autoControl"])
     print ( "Total calls confirmed: %d\n" % TWIN_CALLBACKS )
 
