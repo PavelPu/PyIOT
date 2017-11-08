@@ -19,6 +19,7 @@ from readDataClass import ReadData
 import json
 from relays import Relays
 from logging import Logging
+import subprocess
 
 # HTTP options
 # Because it can poll "after 9 seconds" polls will happen effectively
@@ -229,6 +230,9 @@ def device_method_callback(method_name, payload, user_context):
         relays.waterHeater.off()
         statusText = readDeviceData(sensor, relays, logger)
         device_method_return_value.response = statusText
+    if method_name == "update":
+        subprocess.call("./update.sh")
+        device_method_return_value.response = "Updating"
     return device_method_return_value
 
 
