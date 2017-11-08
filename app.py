@@ -104,7 +104,7 @@ def readDeviceData (sensors, relays, logger):
         }
 
     msg_txt_formatted = json.dumps(msg_unformatted)
-    logger.logStateString(msg_txt_formatted + '\n')
+    logger.logStateString(msg_txt_formatted)
 
     return msg_txt_formatted
 
