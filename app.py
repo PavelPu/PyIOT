@@ -288,14 +288,14 @@ def autoControl():
     if sensor.bathTemp <= 4:
         relays.bath.on()
         print( "Turning heating in bathroom ON")
-    if sensor.bathTemp >= 7:
+    if sensor.bathTemp >= 6:
         relays.bath.off()
         print( "Turning heating in bathroom OFF")
 
-    if sensor.diningTemp <= 1:
+    if sensor.diningTemp <= -30:
         relays.dining.on()
         print( "Turning heating in dining room ON")
-    if sensor.diningTemp >= 3:
+    if sensor.diningTemp >= -28:
         relays.dining.off()
         print( "Turning heating in dining room OFF")
 
