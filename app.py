@@ -37,12 +37,17 @@ MESSAGE_TIMEOUT = 10000
 
 RECEIVE_CONTEXT = 0
 MESSAGE_COUNT = 0
-MESSAGE_SWITCH = False
-AUTO_CONTROL = True
+
 TWIN_CONTEXT = 0
 SEND_REPORTED_STATE_CONTEXT = 0
 METHOD_CONTEXT = 0
 TEMPERATURE_ALERT = 30.0
+
+#settings
+MESSAGE_SWITCH = False
+AUTO_CONTROL = True
+BATH_SETPOINT = 4
+DINING_SETPOINT = 1
 
 # global counters
 RECEIVE_CALLBACKS = 0
@@ -155,14 +160,18 @@ def send_confirmation_callback(message, result, user_context):
 
 
 def device_twin_callback(update_state, payload, user_context):
-    global TWIN_CALLBACKS, AUTO_CONTROL
+    global TWIN_CALLBACKS, AUTO_CONTROL, BATH_SETPOINT, DINING_SETPOINT
     print ( "\nTwin callback called with:\nupdateStatus = %s\npayload = %s\ncontext = %s" % (update_state, payload, user_context) )
     TWIN_CALLBACKS += 1
     twin = json.loads(payload)
     if 'desired' in twin:
         AUTO_CONTROL = twin["desired"]["autoControl"]["enabled"]
+        BATH_SETPOINT = twin["desired"]["setpoints"]["standby"]["bath"]
+        DINING_SETPOINT = twin["desired"]["setpoints"]["standby"]["dining"]
     if 'autoControl' in twin:
         AUTO_CONTROL = twin["autoControl"]["enabled"]
+        BATH_SETPOINT = twin["setpoints"]["standby"]["bath"]
+        DINING_SETPOINT = twin["setpoints"]["standby"]["dining"]
     #if update_state == "PARTIAL":
     #    AUTO_CONTROL = twin["autoControl"]["enabled"]
     #else:
@@ -289,10 +298,10 @@ def reportState(): #report state to device twin
 def autoControl():
     global sensor, relays
 
-    if sensor.bathTemp <= 4:
+    if sensor.bathTemp <= 2:
         relays.bath.on()
         print( "Turning heating in bathroom ON")
-    if sensor.bathTemp >= 6:
+    if sensor.bathTemp >= 4:
         relays.bath.off()
         print( "Turning heating in bathroom OFF")
 
