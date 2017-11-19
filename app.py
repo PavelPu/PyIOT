@@ -160,7 +160,7 @@ def send_confirmation_callback(message, result, user_context):
 
 
 def device_twin_callback(update_state, payload, user_context):
-    global TWIN_CALLBACKS, AUTO_CONTROL, BATH_SETPOINT, DINING_SETPOINT
+    global TWIN_CALLBACKS, AUTO_CONTROL, BATH_SETPOINT, DINING_SETPOINT, MESSAGE_SWITCH
     print ( "\nTwin callback called with:\nupdateStatus = %s\npayload = %s\ncontext = %s" % (update_state, payload, user_context) )
     TWIN_CALLBACKS += 1
     twin = json.loads(payload)
@@ -168,10 +168,12 @@ def device_twin_callback(update_state, payload, user_context):
         AUTO_CONTROL = twin["desired"]["autoControl"]["enabled"]
         BATH_SETPOINT = twin["desired"]["setpoints"]["standby"]["bath"]
         DINING_SETPOINT = twin["desired"]["setpoints"]["standby"]["dining"]
+        MESSAGE_SWITCH = twin["desired"]["sendTelemetry"]
     if 'autoControl' in twin:
         AUTO_CONTROL = twin["autoControl"]["enabled"]
         BATH_SETPOINT = twin["setpoints"]["standby"]["bath"]
         DINING_SETPOINT = twin["setpoints"]["standby"]["dining"]
+        MESSAGE_SWITCH = twin["sendTelemetry"]
     #if update_state == "PARTIAL":
     #    AUTO_CONTROL = twin["autoControl"]["enabled"]
     #else:
