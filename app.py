@@ -99,7 +99,8 @@ def readDeviceData (sensors, relays, logger):
         "timestamp" : sensors.timeStamp,
         "temperature" : {
             "dining" : sensors.diningTemp,
-            "bath" : sensors.bathTemp
+            "bath" : sensors.bathTemp,
+            "ambient" : sensors.ambTemp
             },
         "relaysState" : {
             "dining" : relays.dining.value,

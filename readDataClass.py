@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import time
+import time, json, urllib2
 
 base_dir = '/sys/bus/w1/devices/'
 
@@ -13,6 +13,16 @@ base_dir = '/sys/bus/w1/devices/'
 device_files = ['/sys/bus/w1/devices/28-051700f1d8ff/w1_slave', '/sys/bus/w1/devices/28-051700f63cff/w1_slave'] 
 
 class ReadData: 
+
+    
+    def readWeather(self):
+
+        dom_adress = "192.168.8.100:8181"
+        dev_id = 5
+        device_data = json.load(urllib2.urlopen("%s/json.htm?type=devices&rid=%s" % (adress, dev_id), timeout=5))
+        amb_temp = device_data['result'][0]['Temp']
+
+        return amb_temp
  
     def read_temp_raw(self, dev_file):
         f = open(dev_file, 'r')
@@ -40,12 +50,13 @@ class ReadData:
         self.diningTemp = self.read_temp(device_files[1])
         self.bathTemp = self.read_temp(device_files[0])
         self.timeStamp = time.asctime( time.localtime(time.time()))
+        self.ambTemp = readWeather()
 
     def logValues(self):
         self._dt = time.strftime("%d %b %Y", time.localtime(time.time()))
         self._logname = '/home/pi/PyIOT/logs/' + self._dt +'_log.txt'
         self._logfile = open(self._logname, 'a')
-        self._logString = self.timeStamp+ ";" + str(self.diningTemp) + ";" + str(self.bathTemp) + "\n"
+        self._logString = self.timeStamp+ ";" + str(self.diningTemp) + ";" + str(self.bathTemp) + ";" + str(self.ambTemp) + "\n" 
         self._logfile.write(self._logString)
         self._logfile.close()
 
