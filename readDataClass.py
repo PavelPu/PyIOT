@@ -1,6 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-import time, json, urllib2
+import time, json 
+#import , logging, urllib3, requests
 
 base_dir = '/sys/bus/w1/devices/'
 
@@ -17,12 +18,14 @@ class ReadData:
     
     def readWeather(self):
 
-        dom_adress = "192.168.8.100:8181"
+        dom_address = "http://192.168.8.100:8181"
         dev_id = 5
-        device_data = json.load(urllib2.urlopen("%s/json.htm?type=devices&rid=%s" % (adress, dev_id), timeout=5))
-        amb_temp = device_data['result'][0]['Temp']
+        #str = urllib3.request("%s/json.htm?type=devices&rid=%s" % (dom_address, dev_id), timeout=5)
+        #r = requests.get("%s/json.htm?type=devices&rid=%s" % (dom_address, dev_id))
+        #device_data = r.json()#json.loads(r)
+        #amb_temp = device_data['result'][0]['Temp']
 
-        return amb_temp
+        return -99
  
     def read_temp_raw(self, dev_file):
         f = open(dev_file, 'r')
@@ -50,7 +53,7 @@ class ReadData:
         self.diningTemp = self.read_temp(device_files[1])
         self.bathTemp = self.read_temp(device_files[0])
         self.timeStamp = time.asctime( time.localtime(time.time()))
-        self.ambTemp = readWeather()
+        self.ambTemp = self.readWeather()
 
     def logValues(self):
         self._dt = time.strftime("%d %b %Y", time.localtime(time.time()))
@@ -64,6 +67,7 @@ class ReadData:
         self.diningTemp = self.read_temp(device_files[1])
         self.bathTemp = self.read_temp(device_files[0])
         self.timeStamp = time.asctime( time.localtime(time.time()))
+        self.ambTemp = self.readWeather()
 
 def main():
 
@@ -75,9 +79,9 @@ def main():
     temp = sensors.diningTemp
     temp2 = sensors.bathTemp
     
-    print (sensors.timeStamp, "\ttemp:", temp, "\ttemp2:", temp2)
+    print (sensors.timeStamp, "\ttemp:", temp, "\ttemp2:", temp2, "\tamb:", sensors.ambTemp)
 
-    sensors.logValues()
+    #sensors.logValues()
 
 if __name__=="__main__":
     main()
