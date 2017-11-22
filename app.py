@@ -18,7 +18,7 @@ import re
 from readDataClass import ReadData
 import json
 from relays import Relays
-from logging import Logging
+from mylogging import Logging
 import subprocess
 
 # HTTP options
@@ -243,7 +243,7 @@ def device_method_callback(method_name, payload, user_context):
         statusText = readDeviceData(sensor, relays, logger)
         device_method_return_value.response = statusText
     if method_name == "update":
-        subprocess.call("./update.sh")
+        subprocess.call("/home/pi/PyIOT/update.sh")
         device_method_return_value.response = "Updating"
     return device_method_return_value
 

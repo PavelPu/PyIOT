@@ -1,4 +1,4 @@
 #!/bin/bash
 
 
-./update-apply.sh > /dev/null 2>&1 &
+/home/pi/PyIOT/update-apply.sh > /dev/null 2>&1 &
