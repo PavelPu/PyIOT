@@ -293,7 +293,7 @@ def print_last_message_time(client):
             print ( iothub_client_error )
 
 def reportState(): #report state to device twin
-    global relays
+    global relays, DINING_SETPOINT, BATH_SETPOINT 
     deivceState = {
         "relaysState": {
             "dining" : relays.dining.value,
@@ -329,16 +329,18 @@ def iothub_client_sample_run():
         global client, sensor, relays, logger
         client = iothub_client_init()
 
+        logger = Logging()
+        sensor = ReadData()
+        relays = Relays()
+
+
         if client.protocol == IoTHubTransportProvider.MQTT:
             print ( "IoTHubClient is reporting state" )
             #reported_state = "{\"newState\":\"standBy\",\"relaysState\":{\"dining\":\"off\"}}"
             #client.send_reported_state(reported_state, len(reported_state), send_reported_state_callback, SEND_REPORTED_STATE_CONTEXT)
             reportState()
 
-        logger = Logging()
-        sensor = ReadData()
-        relays = Relays()
-
+        
         #telemetry.send_telemetry_data(parse_iot_hub_name(), EVENT_SUCCESS, "IoT hub connection is established")
         while True:
             global MESSAGE_COUNT,MESSAGE_SWITCH
