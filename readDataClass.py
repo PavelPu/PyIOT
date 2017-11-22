@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import time, json 
+import time, json, urllib.request
 #import , logging, urllib3, requests
 
 base_dir = '/sys/bus/w1/devices/'
@@ -20,12 +20,15 @@ class ReadData:
 
         dom_address = "http://192.168.8.100:8181"
         dev_id = 5
+        response = urllib.request.urlopen("%s/json.htm?type=devices&rid=%s" % (dom_address, dev_id))
         #str = urllib3.request("%s/json.htm?type=devices&rid=%s" % (dom_address, dev_id), timeout=5)
         #r = requests.get("%s/json.htm?type=devices&rid=%s" % (dom_address, dev_id))
         #device_data = r.json()#json.loads(r)
         #amb_temp = device_data['result'][0]['Temp']
+        device_data = json.loads(response.read().decode('utf-8'))
+        amb_temp = device_data['result'][0]['Temp']
 
-        return -99
+        return amb_temp
  
     def read_temp_raw(self, dev_file):
         f = open(dev_file, 'r')
