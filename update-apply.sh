@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo 'GIT pull'
-git pull
+/usr/bin/git pull
 
 echo 'restart'
 sudo systemctl restart pyiot.service
