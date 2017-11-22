@@ -293,6 +293,10 @@ def reportState(): #report state to device twin
         "relaysState": {
             "dining" : relays.dining.value,
             "bath" : relays.bath.value
+            },
+        "setpoints" : {
+            "dining" : DINING_SETPOINT,
+            "bath" : BATH_SETPOINT
             }
         }
     deviceStateJson = json.loads(deviceState)
@@ -322,8 +326,9 @@ def iothub_client_sample_run():
 
         if client.protocol == IoTHubTransportProvider.MQTT:
             print ( "IoTHubClient is reporting state" )
-            reported_state = "{\"newState\":\"standBy\",\"relaysState\":{\"dining\":\"off\"}}"
-            client.send_reported_state(reported_state, len(reported_state), send_reported_state_callback, SEND_REPORTED_STATE_CONTEXT)
+            #reported_state = "{\"newState\":\"standBy\",\"relaysState\":{\"dining\":\"off\"}}"
+            #client.send_reported_state(reported_state, len(reported_state), send_reported_state_callback, SEND_REPORTED_STATE_CONTEXT)
+            reportState()
 
         logger = Logging()
         sensor = ReadData()
