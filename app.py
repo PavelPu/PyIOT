@@ -244,7 +244,7 @@ def device_method_callback(method_name, payload, user_context):
         device_method_return_value.response = statusText
     if method_name == "update":
         subprocess.call("/home/pi/PyIOT/update.sh")
-        device_method_return_value.response = "Updating"
+        device_method_return_value.response = "{ \"Response\": \"Updating\" }"
     return device_method_return_value
 
 
@@ -301,17 +301,17 @@ def reportState(): #report state to device twin
 def autoControl():
     global sensor, relays
 
-    if sensor.bathTemp <= 2:
+    if sensor.bathTemp < BATH_SETPOINT:
         relays.bath.on()
         print( "Turning heating in bathroom ON")
-    if sensor.bathTemp >= 4:
+    if sensor.bathTemp >= BATH_SETPOINT:
         relays.bath.off()
         print( "Turning heating in bathroom OFF")
 
-    if sensor.diningTemp <= -30:
+    if sensor.diningTemp < DINING_SETPOINT:
         relays.dining.on()
         print( "Turning heating in dining room ON")
-    if sensor.diningTemp >= -28:
+    if sensor.diningTemp >= DINING_SETPOINT:
         relays.dining.off()
         print( "Turning heating in dining room OFF")
 
@@ -343,10 +343,12 @@ def iothub_client_sample_run():
                 status = client.get_send_status()
                 print ( "Send status: %s" % status )
                 MESSAGE_COUNT += 1
+            
+            #log current state
+            statusText = readDeviceData(sensor, relays, logger)
+
             if AUTO_CONTROL:
                 autoControl()
-            
-            statusText = readDeviceData(sensor, relays, logger)
             time.sleep(config.MESSAGE_TIMESPAN / 1000.0)
 
     except IoTHubError as iothub_error:
