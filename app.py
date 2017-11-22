@@ -91,6 +91,7 @@ MSG_TXT = "{\"deviceId\": \"raspPI\",\"dining temperature\": %f,\"bathroom tempe
 #GPIO.setup(config.GPIO_PIN_ADDRESS, GPIO.OUT)
 
 def readDeviceData (sensors, relays, logger): 
+    global BATH_SETPOINT, DINING_SETPOINT
     sensors.updVal()
     #sensors.logValues()
 
@@ -106,7 +107,11 @@ def readDeviceData (sensors, relays, logger):
             "dining" : relays.dining.value,
             "bath" : relays.bath.value,
             "waterHeater" : relays.waterHeater.value},
-        "AutoControl" : AUTO_CONTROL
+        "AutoControl" : AUTO_CONTROL,
+        "setpoints" : {
+            "dining" : DINING_SETPOINT,
+            "bath" : BATH_SETPOINT
+            }
         }
 
     msg_txt_formatted = json.dumps(msg_unformatted)
