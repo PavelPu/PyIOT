@@ -299,7 +299,7 @@ def reportState(): #report state to device twin
             "bath" : BATH_SETPOINT
             }
         }
-    deviceStateJson = json.loads(deviceState)
+    deviceStateJson = json.dumps(deviceState)
     client.send_reported_state(deviceStateJson, len(deviceStateJson), send_reported_state_callback, SEND_REPORTED_STATE_CONTEXT)
 
 def autoControl():
