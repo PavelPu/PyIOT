@@ -304,7 +304,7 @@ def reportState(): #report state to device twin
             "bath" : BATH_SETPOINT
             }
         }
-    deviceStateJson = json.dumps(deviceState)
+    deviceStateJson = json.dumps(deivceState)
     client.send_reported_state(deviceStateJson, len(deviceStateJson), send_reported_state_callback, SEND_REPORTED_STATE_CONTEXT)
 
 def autoControl():
@@ -338,7 +338,7 @@ def iothub_client_sample_run():
             print ( "IoTHubClient is reporting state" )
             #reported_state = "{\"newState\":\"standBy\",\"relaysState\":{\"dining\":\"off\"}}"
             #client.send_reported_state(reported_state, len(reported_state), send_reported_state_callback, SEND_REPORTED_STATE_CONTEXT)
-            reportState()
+            #reportState()
 
         
         #telemetry.send_telemetry_data(parse_iot_hub_name(), EVENT_SUCCESS, "IoT hub connection is established")
