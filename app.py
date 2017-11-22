@@ -303,7 +303,7 @@ def reportState(): #report state to device twin
     client.send_reported_state(deviceStateJson, len(deviceStateJson), send_reported_state_callback, SEND_REPORTED_STATE_CONTEXT)
 
 def autoControl():
-    global sensor, relays
+    global sensor, relays, BATH_SETPOINT, DINING_SETPOINT
 
     if sensor.bathTemp < BATH_SETPOINT:
         relays.bath.on()
