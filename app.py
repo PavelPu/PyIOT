@@ -46,7 +46,7 @@ TEMPERATURE_ALERT = 30.0
 #settings
 MESSAGE_SWITCH = False
 AUTO_CONTROL = True
-BATH_SETPOINT = 4
+BATH_SETPOINT = 1.5
 DINING_SETPOINT = -50
 
 # global counters
@@ -172,13 +172,13 @@ def device_twin_callback(update_state, payload, user_context):
     twin = json.loads(payload)
     if 'desired' in twin:
         AUTO_CONTROL = twin["desired"]["autoControl"]["enabled"]
-        BATH_SETPOINT = twin["desired"]["setpoints"]["standby"]["bath"]
-        DINING_SETPOINT = twin["desired"]["setpoints"]["standby"]["dining"]
+        BATH_SETPOINT = twin["autoControl"]["desired"]["setpoints"]["standby"]["bath"]
+        DINING_SETPOINT = twin["autoControl"]["desired"]["setpoints"]["standby"]["dining"]
         MESSAGE_SWITCH = twin["desired"]["sendTelemetry"]
     if 'autoControl' in twin:
         AUTO_CONTROL = twin["autoControl"]["enabled"]
-        BATH_SETPOINT = twin["setpoints"]["standby"]["bath"]
-        DINING_SETPOINT = twin["setpoints"]["standby"]["dining"]
+        BATH_SETPOINT = twin["autoControl"]["setpoints"]["standby"]["bath"]
+        DINING_SETPOINT = twin["autoControl"]["setpoints"]["standby"]["dining"]
         MESSAGE_SWITCH = twin["sendTelemetry"]
     #if update_state == "PARTIAL":
     #    AUTO_CONTROL = twin["autoControl"]["enabled"]
