@@ -47,7 +47,7 @@ TEMPERATURE_ALERT = 30.0
 MESSAGE_SWITCH = False
 AUTO_CONTROL = True
 BATH_SETPOINT = 4
-DINING_SETPOINT = 1
+DINING_SETPOINT = -50
 
 # global counters
 RECEIVE_CALLBACKS = 0
@@ -292,8 +292,8 @@ def print_last_message_time(client):
         else:
             print ( iothub_client_error )
 
-def reportState(): #report state to device twin
-    global relays, DINING_SETPOINT, BATH_SETPOINT 
+def reportState(relays): #report state to device twin
+    global DINING_SETPOINT, BATH_SETPOINT 
     deivceState = {
         "relaysState": {
             "dining" : relays.dining.value,
@@ -338,7 +338,7 @@ def iothub_client_sample_run():
             print ( "IoTHubClient is reporting state" )
             #reported_state = "{\"newState\":\"standBy\",\"relaysState\":{\"dining\":\"off\"}}"
             #client.send_reported_state(reported_state, len(reported_state), send_reported_state_callback, SEND_REPORTED_STATE_CONTEXT)
-            #reportState()
+            reportState(relays)
 
         
         #telemetry.send_telemetry_data(parse_iot_hub_name(), EVENT_SUCCESS, "IoT hub connection is established")
