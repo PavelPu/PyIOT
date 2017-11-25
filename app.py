@@ -313,7 +313,7 @@ def autoControl():
     if sensor.bathTemp < BATH_SETPOINT:
         relays.bath.on()
         print( "Turning heating in bathroom ON")
-    if sensor.bathTemp >= BATH_SETPOINT:
+    if sensor.bathTemp >= BATH_SETPOINT + 1:
         relays.bath.off()
         print( "Turning heating in bathroom OFF")
 
