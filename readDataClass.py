@@ -18,7 +18,7 @@ class ReadData:
     
     def readWeather(self):
 
-        dom_address = "http://192.168.8.100:8181"
+        dom_address = "http://127.0.0.1:8181"
         dev_id = 5
         response = urllib.request.urlopen("%s/json.htm?type=devices&rid=%s" % (dom_address, dev_id))
         #str = urllib3.request("%s/json.htm?type=devices&rid=%s" % (dom_address, dev_id), timeout=5)
