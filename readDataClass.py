@@ -18,16 +18,18 @@ class ReadData:
     
     def readWeather(self):
 
-        dom_address = "http://127.0.0.1:8181"
-        dev_id = 5
-        response = urllib.request.urlopen("%s/json.htm?type=devices&rid=%s" % (dom_address, dev_id))
-        #str = urllib3.request("%s/json.htm?type=devices&rid=%s" % (dom_address, dev_id), timeout=5)
-        #r = requests.get("%s/json.htm?type=devices&rid=%s" % (dom_address, dev_id))
-        #device_data = r.json()#json.loads(r)
-        #amb_temp = device_data['result'][0]['Temp']
-        device_data = json.loads(response.read().decode('utf-8'))
-        amb_temp = device_data['result'][0]['Temp']
-
+        try:
+            dom_address = "http://127.0.0.1:8181"
+            dev_id = 5
+            response = urllib.request.urlopen("%s/json.htm?type=devices&rid=%s" % (dom_address, dev_id))
+            #str = urllib3.request("%s/json.htm?type=devices&rid=%s" % (dom_address, dev_id), timeout=5)
+            #r = requests.get("%s/json.htm?type=devices&rid=%s" % (dom_address, dev_id))
+            #device_data = r.json()#json.loads(r)
+            #amb_temp = device_data['result'][0]['Temp']
+            device_data = json.loads(response.read().decode('utf-8'))
+            amb_temp = device_data['result'][0]['Temp']
+        except Exception:
+            amb_temp = "NA"
         return amb_temp
  
     def read_temp_raw(self, dev_file):
