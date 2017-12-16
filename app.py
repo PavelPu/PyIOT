@@ -127,7 +127,7 @@ def readDeviceData (sensors, relays, remoteRelay, logger):
 
 def composeMessage(sensors, relays):
 
-    msg_txt_formatted = readDeviceData(sensors, relays, logger)
+    msg_txt_formatted = readDeviceData(sensors, relays, remoteRelay, logger)
 
     print (msg_txt_formatted)
     message = IoTHubMessage(msg_txt_formatted)
@@ -228,7 +228,7 @@ def device_method_callback(method_name, payload, user_context):
         MESSAGE_COUNT += 1
         device_method_return_value.response = "{ \"Response\": \"Message sent\" }"
     if method_name == "status":
-        statusText = readDeviceData(sensor, relays, logger)
+        statusText = readDeviceData(sensor, relays, remoteRelay, logger)
         device_method_return_value.response = statusText
     if method_name == "heatOn":
         print("Switching heating ON")
@@ -249,12 +249,12 @@ def device_method_callback(method_name, payload, user_context):
     if method_name == "waterOn":
         print("Switching water heating ON")
         relays.waterHeater.on()
-        statusText = readDeviceData(sensor, relays, logger)
+        statusText = readDeviceData(sensor, relays, remoteRelay, logger)
         device_method_return_value.response = statusText
     if method_name == "waterOff":
         print("Switching water heating OFF")
         relays.waterHeater.off()
-        statusText = readDeviceData(sensor, relays, logger)
+        statusText = readDeviceData(sensor, relays, remoteRelay, logger)
         device_method_return_value.response = statusText
     if method_name == "update":
         subprocess.call("/home/pi/PyIOT/update.sh")
