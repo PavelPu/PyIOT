@@ -2,7 +2,8 @@ import socket
 
 class RemoteRelay:
     def getAll (self):
-        self.sock.sendto(bytes("!GetAll\n", "ascii"), (self.UDP_IP, self.UDP_PORT))
+        self.sock.sendto(bytes("!GetIP\r","ascii"), (self.UDP_IP, self.UDP_PORT))
+        self.sock.sendto(bytes("!GetAll\n", "ascii"), ("192.168.8.100", 7777))
         try:
             data, server = self.sock.recvfrom(1024)
             print(data)
