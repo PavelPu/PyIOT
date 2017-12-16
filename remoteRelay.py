@@ -1,4 +1,5 @@
 import socket
+import netifaces as ni
 
 class RemoteRelay:
     def getAll (self):
@@ -111,14 +112,21 @@ class RemoteRelay:
 
 
     def __init__(self):
+        
         self.UDP_IP = "192.168.8.100"
-        self.UDP_LIP = "192.168.8.104"
+        
         self.UDP_PORT = 7777
-        self.sock = socket.socket(socket.AF_INET, # Internet
-                     socket.SOCK_DGRAM) # UDP
-        self.sock.settimeout(1)
-        self.sock.bind((self.UDP_LIP, self.UDP_PORT))
-        self.getAll()
+        try:
+            self.UDP_LIP = ni.ifaddresses('wlan0')[ni.AF_INET][0]['addr']
+            self.sock = socket.socket(socket.AF_INET, # Internet
+                         socket.SOCK_DGRAM) # UDP
+            self.sock.settimeout(1)
+            self.sock.bind((self.UDP_LIP, self.UDP_PORT))
+            self.getAll()
+        except:
+            self.temp = "NA"
+            self.relay1 = "NA"
+            self.relay2 = "NA"
 
 def main():
 
