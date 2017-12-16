@@ -91,9 +91,10 @@ MSG_TXT = "{\"deviceId\": \"raspPI\",\"dining temperature\": %f,\"bathroom tempe
 #GPIO.setmode(GPIO.BCM)
 #GPIO.setup(config.GPIO_PIN_ADDRESS, GPIO.OUT)
 
-def readDeviceData (sensors, relays, logger): 
+def readDeviceData (sensors, relays, remoteRelay, logger): 
     global BATH_SETPOINT, DINING_SETPOINT
     sensors.updVal()
+    remoteRelay.getAll
     #sensors.logValues()
 
     msg_unformatted = {
@@ -102,11 +103,14 @@ def readDeviceData (sensors, relays, logger):
         "temperature" : {
             "dining" : sensors.diningTemp,
             "bath" : sensors.bathTemp,
+            "bedroom" : remoteRelay.temp,
             "ambient" : sensors.ambTemp
             },
         "relaysState" : {
             "dining" : relays.dining.value,
             "bath" : relays.bath.value,
+            "bedroom1": remoteRelay.relay1,
+            "bedroom2": remoteRelay.relay2,
             "waterHeater" : relays.waterHeater.value},
         "AutoControl" : AUTO_CONTROL,
         "setpoints" : {
@@ -197,7 +201,7 @@ def send_reported_state_callback(status_code, user_context):
 
 
 def device_method_callback(method_name, payload, user_context):
-    global METHOD_CALLBACKS,MESSAGE_SWITCH, MESSAGE_COUNT, sensor, relays, logger
+    global METHOD_CALLBACKS,MESSAGE_SWITCH, MESSAGE_COUNT, sensor, relays, logger, remoteRelay
     print ( "\nMethod callback called with:\nmethodName = %s\npayload = %s\ncontext = %s" % (method_name, payload, user_context) )
     METHOD_CALLBACKS += 1
     print ( "Total calls confirmed: %d\n" % METHOD_CALLBACKS )
@@ -230,13 +234,17 @@ def device_method_callback(method_name, payload, user_context):
         print("Switching heating ON")
         relays.dining.on()
         relays.bath.on()
-        statusText = readDeviceData(sensor, relays, logger)
+        remoteRelay.relay1On()
+        remoteRelay.relay2On()
+        statusText = readDeviceData(sensor, relays, remoteRelay, logger)
         device_method_return_value.response = statusText
     if method_name == "heatOff":
         print("Switching heating OFF")
         relays.dining.off()
         relays.bath.off()
-        statusText = readDeviceData(sensor, relays, logger)
+        remoteRelay.relay1Off()
+        remoteRelay.relay2Off()
+        statusText = readDeviceData(sensor, relays, remoteRelay, logger)
         device_method_return_value.response = statusText
     if method_name == "waterOn":
         print("Switching water heating ON")
@@ -358,7 +366,7 @@ def iothub_client_sample_run():
                 MESSAGE_COUNT += 1
             
             #log current state
-            statusText = readDeviceData(sensor, relays, logger)
+            statusText = readDeviceData(sensor, relays, remoteRelay, logger)
 
             if AUTO_CONTROL:
                 autoControl()
