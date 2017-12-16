@@ -19,6 +19,7 @@ from readDataClass import ReadData
 import json
 from relays import Relays
 from mylogging import Logging
+from remoteRelay import RemoteRelay
 import subprocess
 
 # HTTP options
@@ -320,19 +321,19 @@ def autoControl():
     if sensor.diningTemp < DINING_SETPOINT:
         relays.dining.on()
         print( "Turning heating in dining room ON")
-    if sensor.diningTemp >= DINING_SETPOINT:
+    if sensor.diningTemp >= DINING_SETPOINT + 1:
         relays.dining.off()
         print( "Turning heating in dining room OFF")
 
 def iothub_client_sample_run():
     try:
-        global client, sensor, relays, logger
+        global client, sensor, relays, logger, remoteRelay
         client = iothub_client_init()
 
         logger = Logging()
         sensor = ReadData()
         relays = Relays()
-
+        remoteRelay = RemoteRelay()
 
         if client.protocol == IoTHubTransportProvider.MQTT:
             print ( "IoTHubClient is reporting state" )
