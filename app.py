@@ -94,7 +94,7 @@ MSG_TXT = "{\"deviceId\": \"raspPI\",\"dining temperature\": %f,\"bathroom tempe
 def readDeviceData (sensors, relays, remoteRelay, logger): 
     global BATH_SETPOINT, DINING_SETPOINT
     sensors.updVal()
-    remoteRelay.getAll
+    remoteRelay.getAll()
     #sensors.logValues()
 
     msg_unformatted = {
