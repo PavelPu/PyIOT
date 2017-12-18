@@ -41,73 +41,107 @@ class RemoteRelay:
                         self.temp = "NA"
             except:
                 print("bad responce reading all")
-
+            try:
+                dom_address = "http://127.0.0.1:8181"
+                dev_id = 12
+                response = urllib.request.urlopen("%s/json.htm?type=command&param=udevice&idx=%s&nvalue=0&svalue=%s" % (dom_address, dev_id, self.temp))
+                device_data = json.loads(response.read().decode('utf-8'))
+                #resp = device_data['result'][0]['Temp']
+            except Exception:
+                amb_temp = "NA"
 
     def relay1On (self):
         self.getAll()
-        self.sock.sendto(bytes("!SetR1_1\r", "ascii"), (self.UDP_IP, self.UDP_PORT))
-        try:
-            data, server = self.sock.recvfrom(1024)
-            ans = data.decode("ascii").split("\r")
-            print(len(ans))
-            if (len(ans) == 2):
-                if (ans[0] == "!LEDOFF1"):
-                    self.relay1 = False
-                elif (ans[1] == "!LEDON1"):
-                    self.relay1 = True
-                else: 
-                    self.relay1 = "NA"
-        except:
-            self.relay1 = "NA"
+        iter = 0
+        while (self.relay1 != True):
+            iter = iter + 1
+            if (iter > 5):
+                self.relay1 = "NA"
+                break
+            self.sock.sendto(bytes("!SetR1_1\r", "ascii"), (self.UDP_IP, self.UDP_PORT))
+            try:
+                data, server = self.sock.recvfrom(1024)
+                ans = data.decode("ascii").split("\r")
+                print(len(ans))
+                if (len(ans) == 2):
+                    if (ans[0] == "!LEDOFF1"):
+                        self.relay1 = False
+                    elif (ans[1] == "!LEDON1"):
+                        self.relay1 = True
+                    else: 
+                        self.relay1 = "NA"
+            except:
+                self.relay1 = "NA"
         
     def relay1Off (self):
-        self.sock.sendto(bytes("!SetR0_1\r", "ascii"), (self.UDP_IP, self.UDP_PORT))
-        try:
-            data, server = self.sock.recvfrom(1024)
-            ans = data.decode("ascii").split("\r")
-            print(len(ans))
-            if (len(ans) == 2):
-                if (ans[0] == "!LEDOFF1"):
-                    self.relay1 = False
-                elif (ans[0] == "!LEDON1"):
-                    self.relay1 = True
-                else: 
-                    self.relay1 = "NA"
-        except:
-            self.relay1 = "NA"
+        self.getAll()
+        iter = 0
+        while (self.relay1 != False):
+            iter = iter + 1
+            if (iter > 5):
+                self.relay1 = "NA"
+                break
+            self.sock.sendto(bytes("!SetR0_1\r", "ascii"), (self.UDP_IP, self.UDP_PORT))
+            try:
+                data, server = self.sock.recvfrom(1024)
+                ans = data.decode("ascii").split("\r")
+                print(len(ans))
+                if (len(ans) == 2):
+                    if (ans[0] == "!LEDOFF1"):
+                        self.relay1 = False
+                    elif (ans[0] == "!LEDON1"):
+                        self.relay1 = True
+                    else: 
+                        self.relay1 = "NA"
+            except:
+                self.relay1 = "NA"
             
             
     def relay2On (self):
-        self.sock.sendto(bytes("!SetR1_2\r", "ascii"), (self.UDP_IP, self.UDP_PORT))
-        try:
-            data, server = self.sock.recvfrom(1024)
-            ans = data.decode("ascii").split("\r")
-            print(len(ans))
-            if (len(ans) == 2):
-                if (ans[0] == "!LEDOFF2"):
-                    self.relay2 = False
-                elif (ans[0] == "!LEDON2"):
-                    self.relay2 = True
-                else: 
-                    self.relay2 = "NA"
-        except:
-            self.relay1 = "NA"
+        self.getAll()
+        iter = 0
+        while (self.relay2 != True):
+            iter = iter + 1
+            if (iter > 5):
+                self.relay2 = "NA"
+                break        
+            self.sock.sendto(bytes("!SetR1_2\r", "ascii"), (self.UDP_IP, self.UDP_PORT))
+            try:
+                data, server = self.sock.recvfrom(1024)
+                ans = data.decode("ascii").split("\r")
+                print(len(ans))
+                if (len(ans) == 2):
+                    if (ans[0] == "!LEDOFF2"):
+                        self.relay2 = False
+                    elif (ans[0] == "!LEDON2"):
+                        self.relay2 = True
+                    else: 
+                        self.relay2 = "NA"
+            except:
+                self.relay2 = "NA"
 
     def relay2Off (self):
-        self.sock.sendto(bytes("!SetR0_2\r", "ascii"), (self.UDP_IP, self.UDP_PORT))
-        try:
-            data, server = self.sock.recvfrom(1024)
-            ans = data.decode("ascii").split("\r")
-            print(len(ans))
-            if (len(ans) == 2):
-                if (ans[0] == "!LEDOFF2"):
-                    self.relay2 = False
-                elif (ans[0] == "!LEDON2"):
-                    self.relay2 = True
-                else: 
-                    self.relay2 = "NA"
-        except:
-            self.relay1 = "NA"
+        self.getAll()
+        iter = 0
+        while (self.relay2 != False):
+            iter = iter + 1
+            if (iter > 5):
+                self.relay2 = "NA"
+                break
+            self.sock.sendto(bytes("!SetR0_2\r", "ascii"), (self.UDP_IP, self.UDP_PORT))
+            try:
+                data, server = self.sock.recvfrom(1024)
+                ans = data.decode("ascii").split("\r")
+                print(len(ans))
+                if (len(ans) == 2):
+                    if (ans[0] == "!LEDOFF2"):
+                        self.relay2 = False
+                    elif (ans[0] == "!LEDON2"):
+                        self.relay2 = True
+                    else: 
+                        self.relay2 = "NA"
+            except:
+                self.relay2 = "NA"
 
 
 
