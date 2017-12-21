@@ -47,7 +47,7 @@ TEMPERATURE_ALERT = 30.0
 #settings
 MESSAGE_SWITCH = False
 AUTO_CONTROL = True
-AC_MODE = "operating"
+AC_MODE = "standby"
 BATH_SETPOINT = 1.5
 DINING_SETPOINT = -50
 BEDROOM_SETPOINT = -50
@@ -325,21 +325,29 @@ def reportState(relays): #report state to device twin
     client.send_reported_state(deviceStateJson, len(deviceStateJson), send_reported_state_callback, SEND_REPORTED_STATE_CONTEXT)
 
 def autoControl():
-    global sensor, relays, BATH_SETPOINT, DINING_SETPOINT
+    global sensor, relays, remoteRelay, BATH_SETPOINT, DINING_SETPOINT, BEDROOM_SETPOINT
 
     if sensor.bathTemp < BATH_SETPOINT:
         relays.bath.on()
-        print( "Turning heating in bathroom ON")
+        #print( "Turning heating in bathroom ON")
     if sensor.bathTemp >= BATH_SETPOINT + 1:
         relays.bath.off()
-        print( "Turning heating in bathroom OFF")
+        #print( "Turning heating in bathroom OFF")
 
     if sensor.diningTemp < DINING_SETPOINT:
         relays.dining.on()
-        print( "Turning heating in dining room ON")
+        #print( "Turning heating in dining room ON")
     if sensor.diningTemp >= DINING_SETPOINT + 1:
         relays.dining.off()
-        print( "Turning heating in dining room OFF")
+        #print( "Turning heating in dining room OFF")
+
+    if remoteRelay.temp < BEDROOM_SETPOINT:
+        remoteRelay.relay1On()
+        remoteRelay.relay2On()
+    if remoteRelay.temp >= BEDROOM_SETPOINT + 1:
+        remoteRelay.relay1Off()
+        remoteRelay.relay2Off()
+
 
 def iothub_client_sample_run():
     try:
