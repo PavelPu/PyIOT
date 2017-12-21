@@ -21,6 +21,7 @@ from relays import Relays
 from mylogging import Logging
 from remoteRelay import RemoteRelay
 import subprocess
+import urllib.request
 
 # HTTP options
 # Because it can poll "after 9 seconds" polls will happen effectively
@@ -329,25 +330,51 @@ def autoControl():
 
     if sensor.bathTemp < BATH_SETPOINT:
         relays.bath.on()
+        try:
+            response = urllib.request.urlopen("%s/json.htm?type=command&param=switchlight&idx=%s&switchcmd=On" % (config.DOMOTICZ_ADDRESS, config.IDX_BATH))
+        except:
+            print("unable to talk to Domoticz")
         #print( "Turning heating in bathroom ON")
     if sensor.bathTemp >= BATH_SETPOINT + 1:
         relays.bath.off()
+        try:
+            response = urllib.request.urlopen("%s/json.htm?type=command&param=switchlight&idx=%s&switchcmd=Off" % (config.DOMOTICZ_ADDRESS, config.IDX_BATH))
+        except:
+            print("unable to talk to Domoticz")
         #print( "Turning heating in bathroom OFF")
 
     if sensor.diningTemp < DINING_SETPOINT:
         relays.dining.on()
+        try:
+            response = urllib.request.urlopen("%s/json.htm?type=command&param=switchlight&idx=%s&switchcmd=On" % (config.DOMOTICZ_ADDRESS, config.IDX_DINING))
+        except:
+            print("unable to talk to Domoticz")
         #print( "Turning heating in dining room ON")
     if sensor.diningTemp >= DINING_SETPOINT + 1:
         relays.dining.off()
+        try:
+            response = urllib.request.urlopen("%s/json.htm?type=command&param=switchlight&idx=%s&switchcmd=Off" % (config.DOMOTICZ_ADDRESS, config.IDX_DINING))
+        except:
+            print("unable to talk to Domoticz")
+       
         #print( "Turning heating in dining room OFF")
 
     if remoteRelay.temp < BEDROOM_SETPOINT:
         remoteRelay.relay1On()
         remoteRelay.relay2On()
+        try:
+            response = urllib.request.urlopen("%s/json.htm?type=command&param=switchlight&idx=%s&switchcmd=On" % (config.DOMOTICZ_ADDRESS, config.IDX_BED1))
+            response = urllib.request.urlopen("%s/json.htm?type=command&param=switchlight&idx=%s&switchcmd=On" % (config.DOMOTICZ_ADDRESS, config.IDX_BED2))
+        except:
+            print("unable to talk to Domoticz")
     if remoteRelay.temp >= BEDROOM_SETPOINT + 1:
         remoteRelay.relay1Off()
         remoteRelay.relay2Off()
-
+        try:
+            response = urllib.request.urlopen("%s/json.htm?type=command&param=switchlight&idx=%s&switchcmd=Off" % (config.DOMOTICZ_ADDRESS, config.IDX_BED1))
+            response = urllib.request.urlopen("%s/json.htm?type=command&param=switchlight&idx=%s&switchcmd=Off" % (config.DOMOTICZ_ADDRESS, config.IDX_BED2))
+        except:
+            print("unable to talk to Domoticz")
 
 def iothub_client_sample_run():
     try:
