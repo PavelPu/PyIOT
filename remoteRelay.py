@@ -49,7 +49,7 @@ class RemoteRelay:
                 device_data = json.loads(response.read().decode('utf-8'))
                 #resp = device_data['result'][0]['Temp']
             except Exception:
-                amb_temp = "NA"
+                device_data = "NA"
 
     def relay1On (self):
         self.getAll()

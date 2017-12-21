@@ -47,8 +47,10 @@ TEMPERATURE_ALERT = 30.0
 #settings
 MESSAGE_SWITCH = False
 AUTO_CONTROL = True
+AC_MODE = "standby"
 BATH_SETPOINT = 1.5
 DINING_SETPOINT = -50
+BEDROOM_SETPOINT = -50
 
 # global counters
 RECEIVE_CALLBACKS = 0
@@ -92,7 +94,7 @@ MSG_TXT = "{\"deviceId\": \"raspPI\",\"dining temperature\": %f,\"bathroom tempe
 #GPIO.setup(config.GPIO_PIN_ADDRESS, GPIO.OUT)
 
 def readDeviceData (sensors, relays, remoteRelay, logger): 
-    global BATH_SETPOINT, DINING_SETPOINT
+    global BATH_SETPOINT, DINING_SETPOINT, BEDROOM_SETPOINT, AC_MODE
     sensors.updVal()
     remoteRelay.getAll()
     #sensors.logValues()
@@ -113,9 +115,11 @@ def readDeviceData (sensors, relays, remoteRelay, logger):
             "bedroom2": remoteRelay.relay2,
             "waterHeater" : relays.waterHeater.value},
         "AutoControl" : AUTO_CONTROL,
+        "AutoControlMode" : AC_MODE,
         "setpoints" : {
             "dining" : DINING_SETPOINT,
-            "bath" : BATH_SETPOINT
+            "bath" : BATH_SETPOINT,
+            "bedroom" : BEDROOM_SETPOINT
             }
         }
 
@@ -171,19 +175,21 @@ def send_confirmation_callback(message, result, user_context):
 
 
 def device_twin_callback(update_state, payload, user_context):
-    global TWIN_CALLBACKS, AUTO_CONTROL, BATH_SETPOINT, DINING_SETPOINT, MESSAGE_SWITCH
+    global TWIN_CALLBACKS, AUTO_CONTROL, BATH_SETPOINT, DINING_SETPOINT, BEDROOM_SETPOINT, AC_MODE, MESSAGE_SWITCH
     print ( "\nTwin callback called with:\nupdateStatus = %s\npayload = %s\ncontext = %s" % (update_state, payload, user_context) )
     TWIN_CALLBACKS += 1
     twin = json.loads(payload)
     if 'desired' in twin:
         AUTO_CONTROL = twin["desired"]["autoControl"]["enabled"]
-        BATH_SETPOINT = twin["autoControl"]["desired"]["setpoints"]["standby"]["bath"]
-        DINING_SETPOINT = twin["autoControl"]["desired"]["setpoints"]["standby"]["dining"]
+        BATH_SETPOINT = twin["desired"]["autoControl"]["setpoints"][AC_MODE]["bath"]
+        DINING_SETPOINT = twin["desired"]["autoControl"]["setpoints"][AC_MODE]["dining"]
+        BEDROOM_SETPOINT = twin["desired"]["autoControl"]["setpoints"][AC_MODE]["bedroom"]
         MESSAGE_SWITCH = twin["desired"]["sendTelemetry"]
     if 'autoControl' in twin:
         AUTO_CONTROL = twin["autoControl"]["enabled"]
-        BATH_SETPOINT = twin["autoControl"]["setpoints"]["standby"]["bath"]
-        DINING_SETPOINT = twin["autoControl"]["setpoints"]["standby"]["dining"]
+        BATH_SETPOINT = twin["autoControl"]["setpoints"][AC_MODE]["bath"]
+        DINING_SETPOINT = twin["autoControl"]["setpoints"][AC_MODE]["dining"]
+        BEDROOM_SETPOINT = twin["autoControl"]["setpoints"][AC_MODE]["bedroom"]
         MESSAGE_SWITCH = twin["sendTelemetry"]
     #if update_state == "PARTIAL":
     #    AUTO_CONTROL = twin["autoControl"]["enabled"]
