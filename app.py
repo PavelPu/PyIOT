@@ -249,6 +249,18 @@ def device_method_callback(method_name, payload, user_context):
         else: 
             device_method_return_value.response = "{ \"Response\": \"Mode change unsuccessful, bad payload\" }"
         return device_method_return_value
+    if method_name == "setACmodeSTB":
+        AC_MODE = "standby"
+        statusText = readDeviceData(sensor, relays, remoteRelay, logger) 
+        device_method_return_value.response = statusText
+        return device_method_return_value
+    
+    if method_name == "setACmodeOPR":
+        AC_MODE = "operating"
+        statusText = readDeviceData(sensor, relays, remoteRelay, logger) 
+        device_method_return_value.response = statusText
+        return device_method_return_value
+
     if method_name == "send":
         print ("Sending message")
         message = composeMessage(sensor,relays)
