@@ -402,7 +402,7 @@ def iothub_client_sample_run():
             #reported_state = "{\"newState\":\"standBy\",\"relaysState\":{\"dining\":\"off\"}}"
             #client.send_reported_state(reported_state, len(reported_state), send_reported_state_callback, SEND_REPORTED_STATE_CONTEXT)
             reportState(relays)
-        message = composeStartMessage
+        message = composeStartMessage()
         client.send_event_async(message, send_confirmation_callback, MESSAGE_COUNT)
         print ( "IoTHubClient.send_event_async accepted message [%d] for transmission to IoT Hub." % MESSAGE_COUNT )
 
