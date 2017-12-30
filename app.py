@@ -139,8 +139,19 @@ def composeMessage(sensors, relays):
     prop_map.add("temperatureAlert", "true" if sensors.diningTemp > TEMPERATURE_ALERT else "false")
     return message
 
-
-
+def composeStartMessage():
+    msg_unformatted = {
+        "startTime" : time.asctime( time.localtime(time.time()))
+        }
+    msg_txt_formatted = json.dumps(msg_unformatted)
+    message = IoTHubMessage(msg_txt_formatted)
+    # optional: assign ids
+    message.message_id = "message_%d" % MESSAGE_COUNT
+    message.correlation_id = "correlation_%d" % MESSAGE_COUNT
+    # optional: assign properties
+    prop_map = message.properties()
+    prop_map.add("startupMessage", "true")
+    return message
 
 def receive_message_callback(message, counter):
     global RECEIVE_CALLBACKS
@@ -335,7 +346,7 @@ def autoControl():
 
 def iothub_client_sample_run():
     try:
-        global client, sensor, relays, logger, remoteRelay
+        global client, sensor, relays, logger, remoteRelay, MESSAGE_COUNT
         client = iothub_client_init()
 
         logger = Logging()
@@ -348,11 +359,12 @@ def iothub_client_sample_run():
             #reported_state = "{\"newState\":\"standBy\",\"relaysState\":{\"dining\":\"off\"}}"
             #client.send_reported_state(reported_state, len(reported_state), send_reported_state_callback, SEND_REPORTED_STATE_CONTEXT)
             reportState(relays)
-
+        message = composeStartMessage
+        client.send_event_async(message, send_confirmation_callback, MESSAGE_COUNT)
         
         #telemetry.send_telemetry_data(parse_iot_hub_name(), EVENT_SUCCESS, "IoT hub connection is established")
         while True:
-            global MESSAGE_COUNT,MESSAGE_SWITCH
+            global MESSAGE_SWITCH
             if MESSAGE_SWITCH:
                 # send a few messages every minute
                 print ( "IoTHubClient sending %d messages" % MESSAGE_COUNT )
