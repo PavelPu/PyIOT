@@ -193,14 +193,14 @@ def device_twin_callback(update_state, payload, user_context):
     twin = json.loads(payload)
     if 'desired' in twin:
         AUTO_CONTROL = twin["desired"]["autoControl"]["enabled"]
-        AC_MODE = twin["desired"]["autoControl"]["mode"]
+        #AC_MODE = twin["desired"]["autoControl"]["mode"]
         BATH_SETPOINT = twin["desired"]["autoControl"]["setpoints"][AC_MODE]["bath"]
         DINING_SETPOINT = twin["desired"]["autoControl"]["setpoints"][AC_MODE]["dining"]
         BEDROOM_SETPOINT = twin["desired"]["autoControl"]["setpoints"][AC_MODE]["bedroom"]
         MESSAGE_SWITCH = twin["desired"]["sendTelemetry"]
     if 'autoControl' in twin:
         AUTO_CONTROL = twin["autoControl"]["enabled"]
-        AC_MODE = twin["autoControl"]["mode"]
+        #AC_MODE = twin["autoControl"]["mode"]
         BATH_SETPOINT = twin["autoControl"]["setpoints"][AC_MODE]["bath"]
         DINING_SETPOINT = twin["autoControl"]["setpoints"][AC_MODE]["dining"]
         BEDROOM_SETPOINT = twin["autoControl"]["setpoints"][AC_MODE]["bedroom"]
@@ -221,7 +221,7 @@ def send_reported_state_callback(status_code, user_context):
 
 
 def device_method_callback(method_name, payload, user_context):
-    global METHOD_CALLBACKS,MESSAGE_SWITCH, MESSAGE_COUNT, sensor, relays, logger, remoteRelay
+    global METHOD_CALLBACKS,MESSAGE_SWITCH, MESSAGE_COUNT, sensor, relays, logger, remoteRelay, AC_MODE
     print ( "\nMethod callback called with:\nmethodName = %s\npayload = %s\ncontext = %s" % (method_name, payload, user_context) )
     METHOD_CALLBACKS += 1
     print ( "Total calls confirmed: %d\n" % METHOD_CALLBACKS )
@@ -237,6 +237,17 @@ def device_method_callback(method_name, payload, user_context):
         MESSAGE_SWITCH = False
         print ( "Stop sending message\n" )
         device_method_return_value.response = "{ \"Response\": \"Successfully stopped\" }"
+        return device_method_return_value
+    if method_name == "setACmode":
+        if 'mode' in payload:
+            if payload['mode'] == "standby":
+                AC_MODE = "standby"
+            if payload['mode'] == "operating":
+                AC_MODE == "operating"
+            statusText = readDeviceData(sensor, relays, remoteRelay, logger) 
+            device_method_return_value.response = statusText
+        else: 
+            device_method_return_value.response = "{ \"Response\": \"Mode change unsuccessful, bad payload\" }"
         return device_method_return_value
     if method_name == "send":
         print ("Sending message")
