@@ -11,7 +11,7 @@ class RemoteRelay:
             if (iter > 5):
                 self.relay1 = "NA"
                 self.relay2 = "NA"
-                self.temp = "NA"
+                self.temp = -99
                 break
             self.sock.sendto(bytes("!GetAll\r", "ascii"), (self.UDP_IP, self.UDP_PORT))
             try:
@@ -39,7 +39,7 @@ class RemoteRelay:
                     elif (ans[5].find("-") > 0):
                         self.temp = int(ans[5][ans[5].find("-")+1:])
                     else:
-                        self.temp = "NA"
+                        self.temp = -99
             except:
                 print("bad responce reading all")
             try:
@@ -49,7 +49,7 @@ class RemoteRelay:
                 device_data = json.loads(response.read().decode('utf-8'))
                 #resp = device_data['result'][0]['Temp']
             except Exception:
-                amb_temp = "NA"
+                device_data = "NA"
 
     def relay1On (self):
         self.getAll()

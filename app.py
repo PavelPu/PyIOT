@@ -21,6 +21,7 @@ from relays import Relays
 from mylogging import Logging
 from remoteRelay import RemoteRelay
 import subprocess
+import urllib.request
 
 # HTTP options
 # Because it can poll "after 9 seconds" polls will happen effectively
@@ -47,8 +48,10 @@ TEMPERATURE_ALERT = 30.0
 #settings
 MESSAGE_SWITCH = False
 AUTO_CONTROL = True
+AC_MODE = "standby"
 BATH_SETPOINT = 1.5
 DINING_SETPOINT = -50
+BEDROOM_SETPOINT = -50
 
 # global counters
 RECEIVE_CALLBACKS = 0
@@ -92,9 +95,9 @@ MSG_TXT = "{\"deviceId\": \"raspPI\",\"dining temperature\": %f,\"bathroom tempe
 #GPIO.setup(config.GPIO_PIN_ADDRESS, GPIO.OUT)
 
 def readDeviceData (sensors, relays, remoteRelay, logger): 
-    global BATH_SETPOINT, DINING_SETPOINT
+    global BATH_SETPOINT, DINING_SETPOINT, BEDROOM_SETPOINT, AC_MODE
     sensors.updVal()
-    remoteRelay.getAll
+    remoteRelay.getAll()
     #sensors.logValues()
 
     msg_unformatted = {
@@ -113,9 +116,11 @@ def readDeviceData (sensors, relays, remoteRelay, logger):
             "bedroom2": remoteRelay.relay2,
             "waterHeater" : relays.waterHeater.value},
         "AutoControl" : AUTO_CONTROL,
+        "AutoControlMode" : AC_MODE,
         "setpoints" : {
             "dining" : DINING_SETPOINT,
-            "bath" : BATH_SETPOINT
+            "bath" : BATH_SETPOINT,
+            "bedroom" : BEDROOM_SETPOINT
             }
         }
 
@@ -182,19 +187,23 @@ def send_confirmation_callback(message, result, user_context):
 
 
 def device_twin_callback(update_state, payload, user_context):
-    global TWIN_CALLBACKS, AUTO_CONTROL, BATH_SETPOINT, DINING_SETPOINT, MESSAGE_SWITCH
+    global TWIN_CALLBACKS, AUTO_CONTROL, BATH_SETPOINT, DINING_SETPOINT, BEDROOM_SETPOINT, AC_MODE, MESSAGE_SWITCH
     print ( "\nTwin callback called with:\nupdateStatus = %s\npayload = %s\ncontext = %s" % (update_state, payload, user_context) )
     TWIN_CALLBACKS += 1
     twin = json.loads(payload)
     if 'desired' in twin:
         AUTO_CONTROL = twin["desired"]["autoControl"]["enabled"]
-        BATH_SETPOINT = twin["autoControl"]["desired"]["setpoints"]["standby"]["bath"]
-        DINING_SETPOINT = twin["autoControl"]["desired"]["setpoints"]["standby"]["dining"]
+        AC_MODE = twin["desired"]["autoControl"]["mode"]
+        BATH_SETPOINT = twin["desired"]["autoControl"]["setpoints"][AC_MODE]["bath"]
+        DINING_SETPOINT = twin["desired"]["autoControl"]["setpoints"][AC_MODE]["dining"]
+        BEDROOM_SETPOINT = twin["desired"]["autoControl"]["setpoints"][AC_MODE]["bedroom"]
         MESSAGE_SWITCH = twin["desired"]["sendTelemetry"]
     if 'autoControl' in twin:
         AUTO_CONTROL = twin["autoControl"]["enabled"]
-        BATH_SETPOINT = twin["autoControl"]["setpoints"]["standby"]["bath"]
-        DINING_SETPOINT = twin["autoControl"]["setpoints"]["standby"]["dining"]
+        AC_MODE = twin["autoControl"]["mode"]
+        BATH_SETPOINT = twin["autoControl"]["setpoints"][AC_MODE]["bath"]
+        DINING_SETPOINT = twin["autoControl"]["setpoints"][AC_MODE]["dining"]
+        BEDROOM_SETPOINT = twin["autoControl"]["setpoints"][AC_MODE]["bedroom"]
         MESSAGE_SWITCH = twin["sendTelemetry"]
     #if update_state == "PARTIAL":
     #    AUTO_CONTROL = twin["autoControl"]["enabled"]
@@ -328,21 +337,55 @@ def reportState(relays): #report state to device twin
     client.send_reported_state(deviceStateJson, len(deviceStateJson), send_reported_state_callback, SEND_REPORTED_STATE_CONTEXT)
 
 def autoControl():
-    global sensor, relays, BATH_SETPOINT, DINING_SETPOINT
+    global sensor, relays, remoteRelay, BATH_SETPOINT, DINING_SETPOINT, BEDROOM_SETPOINT
 
     if sensor.bathTemp < BATH_SETPOINT:
         relays.bath.on()
-        print( "Turning heating in bathroom ON")
+        try:
+            response = urllib.request.urlopen("%s/json.htm?type=command&param=switchlight&idx=%s&switchcmd=On" % (config.DOMOTICZ_ADDRESS, config.IDX_BATH))
+        except:
+            print("unable to talk to Domoticz")
+        #print( "Turning heating in bathroom ON")
     if sensor.bathTemp >= BATH_SETPOINT + 1:
         relays.bath.off()
-        print( "Turning heating in bathroom OFF")
+        try:
+            response = urllib.request.urlopen("%s/json.htm?type=command&param=switchlight&idx=%s&switchcmd=Off" % (config.DOMOTICZ_ADDRESS, config.IDX_BATH))
+        except:
+            print("unable to talk to Domoticz")
+        #print( "Turning heating in bathroom OFF")
 
     if sensor.diningTemp < DINING_SETPOINT:
         relays.dining.on()
-        print( "Turning heating in dining room ON")
+        try:
+            response = urllib.request.urlopen("%s/json.htm?type=command&param=switchlight&idx=%s&switchcmd=On" % (config.DOMOTICZ_ADDRESS, config.IDX_DINING))
+        except:
+            print("unable to talk to Domoticz")
+        #print( "Turning heating in dining room ON")
     if sensor.diningTemp >= DINING_SETPOINT + 1:
         relays.dining.off()
-        print( "Turning heating in dining room OFF")
+        try:
+            response = urllib.request.urlopen("%s/json.htm?type=command&param=switchlight&idx=%s&switchcmd=Off" % (config.DOMOTICZ_ADDRESS, config.IDX_DINING))
+        except:
+            print("unable to talk to Domoticz")
+       
+        #print( "Turning heating in dining room OFF")
+
+    if remoteRelay.temp < BEDROOM_SETPOINT:
+        remoteRelay.relay1On()
+        remoteRelay.relay2On()
+        try:
+            response = urllib.request.urlopen("%s/json.htm?type=command&param=switchlight&idx=%s&switchcmd=On" % (config.DOMOTICZ_ADDRESS, config.IDX_BED1))
+            response = urllib.request.urlopen("%s/json.htm?type=command&param=switchlight&idx=%s&switchcmd=On" % (config.DOMOTICZ_ADDRESS, config.IDX_BED2))
+        except:
+            print("unable to talk to Domoticz")
+    if remoteRelay.temp >= BEDROOM_SETPOINT + 1:
+        remoteRelay.relay1Off()
+        remoteRelay.relay2Off()
+        try:
+            response = urllib.request.urlopen("%s/json.htm?type=command&param=switchlight&idx=%s&switchcmd=Off" % (config.DOMOTICZ_ADDRESS, config.IDX_BED1))
+            response = urllib.request.urlopen("%s/json.htm?type=command&param=switchlight&idx=%s&switchcmd=Off" % (config.DOMOTICZ_ADDRESS, config.IDX_BED2))
+        except:
+            print("unable to talk to Domoticz")
 
 def iothub_client_sample_run():
     try:
