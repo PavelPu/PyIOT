@@ -141,7 +141,7 @@ def composeMessage(sensors, relays):
     message.correlation_id = "correlation_%d" % MESSAGE_COUNT
     # optional: assign properties
     prop_map = message.properties()
-    prop_map.add("temperatureAlert", "true" if sensors.diningTemp > TEMPERATURE_ALERT else "false")
+    prop_map.add("statusMessage", "true")
     return message
 
 def composeStartMessage():
