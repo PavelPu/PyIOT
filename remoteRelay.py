@@ -148,7 +148,7 @@ class RemoteRelay:
 
     def __init__(self):
         
-        self.UDP_IP = "192.168.8.100"
+        self.UDP_IP = "192.168.8.101"
         
         self.UDP_PORT = 7777
         try:
