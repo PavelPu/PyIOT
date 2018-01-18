@@ -36,8 +36,8 @@ class RemoteRelay:
 
                     if (ans[5].find("+") > 0):
                         self.temp = int(ans[5][ans[5].find("+")+1:])
-                    elif (ans[5].find("-") > 0):
-                        self.temp = int(ans[5][ans[5].find("-")+1:])
+                    elif (ans[5].find("--") > 0):
+                        self.temp = int(ans[5][ans[5].find("--")+1:])
                     else:
                         self.temp = -99
             except:
@@ -148,7 +148,7 @@ class RemoteRelay:
 
     def __init__(self):
         
-        self.UDP_IP = "192.168.8.101"
+        self.UDP_IP = "192.168.8.100"
         
         self.UDP_PORT = 7777
         try:
