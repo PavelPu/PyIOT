@@ -142,6 +142,7 @@ def composeMessage(sensors, relays):
     # optional: assign properties
     prop_map = message.properties()
     prop_map.add("statusMessage", "true")
+    prop_map.add("telemetry", "true")
     return message
 
 def composeStartMessage():
@@ -156,6 +157,7 @@ def composeStartMessage():
     # optional: assign properties
     prop_map = message.properties()
     prop_map.add("startupMessage", "true")
+    prop_map.add("telemetry", "false")
     return message
 
 def receive_message_callback(message, counter):
