@@ -193,14 +193,14 @@ def device_twin_callback(update_state, payload, user_context):
     twin = json.loads(payload)
     if 'desired' in twin:
         AUTO_CONTROL = twin["desired"]["autoControl"]["enabled"]
-        #AC_MODE = twin["desired"]["autoControl"]["mode"]
+        AC_MODE = twin["desired"]["autoControl"]["mode"]
         BATH_SETPOINT = twin["desired"]["autoControl"]["setpoints"][AC_MODE]["bath"]
         DINING_SETPOINT = twin["desired"]["autoControl"]["setpoints"][AC_MODE]["dining"]
         BEDROOM_SETPOINT = twin["desired"]["autoControl"]["setpoints"][AC_MODE]["bedroom"]
         MESSAGE_SWITCH = twin["desired"]["sendTelemetry"]
     if 'autoControl' in twin:
         AUTO_CONTROL = twin["autoControl"]["enabled"]
-        #AC_MODE = twin["autoControl"]["mode"]
+        AC_MODE = twin["autoControl"]["mode"]
         BATH_SETPOINT = twin["autoControl"]["setpoints"][AC_MODE]["bath"]
         DINING_SETPOINT = twin["autoControl"]["setpoints"][AC_MODE]["dining"]
         BEDROOM_SETPOINT = twin["autoControl"]["setpoints"][AC_MODE]["bedroom"]
