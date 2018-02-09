@@ -55,8 +55,24 @@ class ReadData:
             return temp_c
     
     def updVal(self):
-        self.diningTemp = self.read_temp(device_files[1])
-        self.bathTemp = self.read_temp(device_files[0])
+        i=0
+        while i < 3:
+            try:
+                self.diningTemp = self.read_temp(device_files[1])
+                i = 3
+            except Exception:
+                time.sleep(0.2)
+                i = i+1
+                self.diningTemp = -99
+        i = 0
+        while i < 3:
+            try:
+                self.bathTemp = self.read_temp(device_files[0])
+                i = 3
+            except Exception:
+                time.sleep(0.2)
+                i = i+1
+                self.bathTemp = -99
         self.timeStamp = time.asctime( time.localtime(time.time()))
         self.ambTemp = self.readWeather()
 
