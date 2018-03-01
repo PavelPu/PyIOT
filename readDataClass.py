@@ -85,8 +85,12 @@ class ReadData:
         self._logfile.close()
 
     def __init__(self):
-        self.diningTemp = self.read_temp(device_files[1])
-        self.bathTemp = self.read_temp(device_files[0])
+        try:
+            self.diningTemp = self.read_temp(device_files[1])
+            self.bathTemp = self.read_temp(device_files[0])
+        except:
+            self.diningTemp = -99
+            self.bathTemp = -99
         self.timeStamp = time.asctime( time.localtime(time.time()))
         self.ambTemp = self.readWeather()
 
