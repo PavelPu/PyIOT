@@ -380,7 +380,7 @@ def autoControl():
             print("unable to talk to Domoticz")
         #print( "Turning heating in bathroom OFF")
 
-    if sensor.bathTemp < 1.5:
+    if sensor.bathTemp < 2.0:
         relays.waterHeater.on()
         try:
             response = urllib.request.urlopen("%s/json.htm?type=command&param=switchlight&idx=%s&switchcmd=On" % (config.DOMOTICZ_ADDRESS, config.IDX_WH))
