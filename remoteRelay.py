@@ -38,6 +38,8 @@ class RemoteRelay:
                         self.temp = int(ans[5][ans[5].find("+")+1:])
                     elif (ans[5].find("--") > 0):
                         self.temp = int(ans[5][ans[5].find("--")+1:])
+                    elif (ans[5].find("-") > 0):
+                        self.temp = int(ans[5][ans[5].find("-")+1:])
                     else:
                         self.temp = -99
             except:
